@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Working with LLMs: Local, Cloud, Agents</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --panel: #12151c;
+    --panel-2: #181c26;
+    --line: #242a37;
+    --text: #e8ebf2;
+    --muted: #8d96a8;
+    --accent: #7c9cff;
+    --local: #3ddc97;
+    --cloud: #5aa9ff;
+    --agent: #ffb454;
+    --code-bg: #0a0c11;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre, kbd { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+  /* top nav */
+  header.nav {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(11,13,18,.85); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav .wrap { display: flex; align-items: center; gap: 8px; height: 60px; overflow-x: auto; }
+  .brand { font-weight: 700; letter-spacing: -.01em; margin-right: auto; white-space: nowrap; }
+  .tab {
+    appearance: none; border: 1px solid transparent; background: none; color: var(--muted);
+    padding: 8px 14px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; white-space: nowrap; transition: .15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab[aria-selected="true"] { color: var(--text); background: var(--panel-2); border-color: var(--line); }
+  .tab .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; background: var(--muted); }
+  .tab[data-tab="local"] .dot { background: var(--local); }
+  .tab[data-tab="cloud"] .dot { background: var(--cloud); }
+  .tab[data-tab="agents"] .dot { background: var(--agent); }
+
+  section.page { display: none; padding: 48px 0 96px; }
+  section.page.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* hero */
+  .hero { padding: 40px 0 8px; }
+  .eyebrow { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { font-size: clamp(36px, 6vw, 64px); line-height: 1.05; letter-spacing: -.03em; margin: 12px 0 18px; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, var(--local), var(--cloud), var(--agent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { font-size: 20px; color: var(--muted); max-width: 720px; }
+  h2 { font-size: 28px; letter-spacing: -.02em; margin: 56px 0 8px; }
+  h3 { font-size: 18px; margin: 0 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+
+  .grid { display: grid; gap: 16px; }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .card p { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+  .card .big { font-size: 28px; line-height: 1; margin-bottom: 12px; }
+
+  .stat { text-align: left; }
+  .stat .num { font-size: 40px; font-weight: 800; letter-spacing: -.03em; }
+
+  /* path cards on landing */
+  .path { cursor: pointer; transition: .15s; position: relative; overflow: hidden; }
+  .path:hover { transform: translateY(-3px); border-color: var(--c); }
+  .path::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--c); }
+  .path .tag { color: var(--c); font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .path ul { margin: 12px 0 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+  .path .go { display: inline-block; margin-top: 14px; color: var(--c); font-weight: 600; font-size: 14px; }
+
+  /* table */
+  .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 620px; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); }
+  th { background: var(--panel-2); color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { color: var(--muted); }
+
+  /* tab pages */
+  .page-head { border-left: 4px solid var(--c); padding-left: 18px; margin-bottom: 28px; }
+  .page-head h1 { font-size: clamp(30px, 4.5vw, 46px); margin: 6px 0 8px; }
+  .page-head .lead { font-size: 18px; }
+  .local  { --c: var(--local); }
+  .cloud  { --c: var(--cloud); }
+  .agents { --c: var(--agent); }
+
+  .step { display: grid; grid-template-columns: 40px 1fr; gap: 16px; margin: 32px 0; }
+  .step .n {
+    width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+    background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--c); font-weight: 800;
+    border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
+  }
+  .step h3 { font-size: 20px; margin-top: 6px; }
+  .step p { color: var(--muted); margin: 4px 0 12px; }
+  .step .body { min-width: 0; }
+
+  .code { position: relative; margin: 12px 0; }
+  .code .lang {
+    position: absolute; left: 14px; top: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  }
+  .code button.copy {
+    position: absolute; right: 10px; top: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
+    border-radius: 8px; padding: 3px 10px; font-size: 12px; cursor: pointer;
+  }
+  .code button.copy:hover { color: var(--text); }
+  pre {
+    margin: 0; padding: 34px 16px 16px; background: var(--code-bg); border: 1px solid var(--line);
+    border-radius: 12px; overflow-x: auto; font-size: 13.5px; line-height: 1.6; tab-size: 4;
+  }
+  .c { color: #6b7388; }      /* comment */
+  .k { color: #c792ea; }      /* keyword */
+  .s { color: #a5e075; }      /* string */
+  .f { color: #82aaff; }      /* function */
+
+  .note {
+    border: 1px solid color-mix(in srgb, var(--c) 35%, var(--line)); background: color-mix(in srgb, var(--c) 7%, var(--panel));
+    border-radius: 12px; padding: 14px 18px; margin: 16px 0; font-size: 15px;
+  }
+  .note strong { color: var(--c); }
+  .warn { --c: #ff7a7a; }
+
+  .docs { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .docs li { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+  .docs .what { font-weight: 600; min-width: 190px; }
+  .docs .why { color: var(--muted); font-size: 14px; flex: 1; }
+  .docs a { font-size: 13px; font-family: ui-monospace, Menlo, monospace; word-break: break-all; }
+
+  /* flow diagram */
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 20px 0; }
+  .node { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; }
+  .node small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+  .node.hot { border-color: var(--c); color: var(--c); }
+  .arrow { color: var(--muted); }
+
+
+  .pager { display: flex; justify-content: space-between; margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .pager button { background: var(--panel); border: 1px solid var(--line); color: var(--text); padding: 10px 18px; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600; }
+  .pager button:hover { border-color: var(--accent); }
+
+  footer { color: var(--muted); font-size: 13px; text-align: center; padding: 24px 0 48px; }
+  kbd { background: var(--panel-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; font-size: 12px; }
+
+  @media (max-width: 640px) {
+    .step { grid-template-columns: 1fr; }
+    .step .n { width: 32px; height: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <div class="brand">⚡ Working with LLMs</div>
+    <button class="tab" role="tab" data-tab="home" aria-selected="true">Why</button>
+    <button class="tab" role="tab" data-tab="local"><span class="dot"></span>Local · Ollama</button>
+    <button class="tab" role="tab" data-tab="cloud"><span class="dot"></span>Cloud · Gemini API</button>
+    <button class="tab" role="tab" data-tab="agents"><span class="dot"></span>Agents · LangChain</button>
+  </div>
+</header>
+
+<!-- ============================ HOME ============================ -->
+<section class="page active" id="home">
+  <div class="wrap">
+    <div class="hero">
+      <div class="eyebrow">A practical guide</div>
+      <h1>Stop just <em>chatting</em> with LLMs.<br>Start building with them.</h1>
+      <p class="lead">Anyone can type into a chatbot. The people who pull ahead are the ones who know how to plug a model into their own code, data and workflows.</p>
+    </div>
+
+    <h2>Jobs are shifting around LLMs</h2>
+    <p class="sub">New titles keep appearing and old ones are being redefined, but they share one core skill: knowing how to work with an LLM.</p>
+    <div class="grid g3">
+      <div class="card role"><h3>GenAI Engineer</h3><p>Builds products on top of foundation models: prompts, APIs, RAG, evaluation.</p></div>
+      <div class="card role"><h3>AI Engineer</h3><p>Software engineer who integrates models into real applications and ships them.</p></div>
+      <div class="card role"><h3>Agentic AI Engineer</h3><p>Designs agents that use tools and take multi-step actions reliably and safely.</p></div>
+      <div class="card role"><h3>Data Scientist / Analyst</h3><p>Uses LLMs to extract, classify and analyse text data, and to speed up analysis work.</p></div>
+      <div class="card role"><h3>ML Engineer</h3><p>Moves from training everything to fine-tuning, serving and running models locally or in the cloud.</p></div>
+      <div class="card role"><h3>Software Developer</h3><p>Same job, new toolbox: LLM calls become a normal part of the stack.</p></div>
+    </div>
+    <div class="note" style="--c:var(--accent)"><strong>The common thread:</strong> prompts, APIs, local vs cloud models, and tool calling are the basics under every one of these roles. Learn the core once, and you can move between them.</div>
+
+    <h2>Three ways to work with an LLM</h2>
+    <p class="sub">Same idea, different trade-offs. This video walks through all three.</p>
+    <div class="grid g3">
+      <div class="card path local" data-go="local">
+        <div class="tag">Part 1 · Local</div>
+        <h3>Run it on your machine</h3>
+        <p>Download an open model and run it with Ollama. No account, no internet, no bill.</p>
+        <ul><li>Install Ollama</li><li>Pull &amp; chat with a model</li><li>Use it from code</li></ul>
+        <span class="go">Open Local →</span>
+      </div>
+      <div class="card path cloud" data-go="cloud">
+        <div class="tag">Part 2 · Cloud API</div>
+        <h3>Call a hosted model</h3>
+        <p>Use Google's Gemini API through AI Studio. Frontier-grade models with a free tier.</p>
+        <ul><li>Get a free API key</li><li>Generate, stream, chat</li><li>Read the official docs</li></ul>
+        <span class="go">Open Cloud →</span>
+      </div>
+      <div class="card path agents" data-go="agents">
+        <div class="tag">Part 3 · Agents</div>
+        <h3>Give the model tools</h3>
+        <p>Use LangChain so an LLM can call your Python functions and act, not just talk.</p>
+        <ul><li>Define tools</li><li>Build an agent</li><li>Swap local ↔ cloud</li></ul>
+        <span class="go">Open Agents →</span>
+      </div>
+    </div>
+
+    <h2>Which one should you pick?</h2>
+    <p class="sub">Short answer: learn all three, because you'll use each for different jobs.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th></th><th>Local (Ollama)</th><th>Cloud API (Gemini)</th><th>Agents (LangChain)</th></tr></thead>
+        <tbody>
+          <tr><td>Where it runs</td><td>Your laptop</td><td>Google's servers</td><td>Your code + any model</td></tr>
+          <tr><td>Cost</td><td>Free (your hardware)</td><td>Free tier, then pay per token</td><td>Cost of the model you plug in</td></tr>
+          <tr><td>Privacy</td><td>Data never leaves your machine</td><td>Sent to a provider</td><td>Depends on the model</td></tr>
+          <tr><td>Model quality</td><td>Good, limited by your RAM / GPU</td><td>Top-tier</td><td>Depends on the model</td></tr>
+          <tr><td>Best for</td><td>Learning, private data, offline</td><td>Production apps, hard tasks</td><td>Multi-step tasks that need actions</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Before you start</h2>
+    <div class="grid g2">
+      <div class="card"><h3>You'll need</h3><p>Python 3.10+ and a terminal. A laptop with 8 GB RAM or more is enough for small local models.</p></div>
+      <div class="card"><h3>Setup once</h3>
+        <div class="code" style="margin-top:12px"><span class="lang">bash</span><pre>python3 -m venv .venv
+source .venv/bin/activate</pre></div>
+      </div>
+    </div>
+
+    <p style="margin-top:36px"><button class="tab" style="background:var(--accent);color:#0b0d12;border:0;padding:12px 22px;font-size:16px" data-go="local">Start with Part 1 → Local</button></p>
+    <footer>Tip: press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> to jump between tabs, <kbd>←</kbd> <kbd>→</kbd> to move through them.</footer>
+  </div>
+</section>
+
+<!-- ============================ LOCAL ============================ -->
+<section class="page local" id="local">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="eyebrow" style="color:var(--c)">Part 1 · Local</div>
+      <h1>Run LLMs on your own machine with Ollama</h1>
+      <p class="lead">Ollama downloads open-weight models and serves them through a CLI and a local REST API. Nothing leaves your laptop.</p>
+    </div>
+
+    <div class="note"><strong>Why local?</strong> Free, private, works offline, and no rate limits. The trade-off: the model you can run is limited by your RAM / GPU.</div>
+
+    <div class="step"><div class="n">1</div><div class="body">
+      <h3>Install Ollama</h3>
+      <p>Download the installer from <a href="https://ollama.com/download" target="_blank" rel="noopener">ollama.com/download</a> (macOS, Windows, Linux). On Mac with Homebrew you can also do:</p>
+      <div class="code"><span class="lang">bash</span><pre>brew install ollama
+ollama --version</pre></div>
+      <p>The desktop app starts the server for you. If you installed only the CLI, start it yourself with <code>ollama serve</code>.</p>
+    </div></div>
+
+    <div class="step"><div class="n">2</div><div class="body">
+      <h3>Run your first model</h3>
+      <p><code>ollama run</code> downloads the model the first time, then opens an interactive chat. Browse available models at <a href="https://ollama.com/library" target="_blank" rel="noopener">ollama.com/library</a>.</p>
+      <div class="code"><span class="lang">bash</span><pre>ollama run llama3.1:8B
+<span class="c"># type a prompt, then /bye to exit</span></pre></div>
+      <div class="note"><strong>Pick a size that fits your RAM.</strong> Rule of thumb: 1B–3B models run comfortably on 8 GB; 7B–8B models want about 16 GB. Smaller models are faster but weaker.</div>
+    </div></div>
+
+    <div class="step"><div class="n">3</div><div class="body">
+      <h3>Learn the core commands</h3>
+      <div class="code"><span class="lang">bash</span><pre>ollama pull qwen3        <span class="c"># download a model without chatting</span>
+ollama list              <span class="c"># models on disk</span>
+ollama ps                <span class="c"># models currently loaded in memory</span>
+ollama show llama3.1:8B     <span class="c"># details: parameters, context length, template</span>
+ollama stop llama3.1:8B     <span class="c"># unload from memory</span>
+ollama rm llama3.1:8B       <span class="c"># delete from disk</span></pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">4</div><div class="body">
+      <h3>It's also a REST API</h3>
+      <p>Ollama listens on <code>localhost:11434</code>. This is what every library talks to under the hood.</p>
+      <div class="code"><span class="lang">bash</span><pre>curl http://localhost:11434/api/generate -d '{
+  "model": "llama3.1:8B",
+  "prompt": "Explain what an LLM is in one sentence.",
+  "stream": false
+}'</pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">5</div><div class="body">
+      <h3>Use it from Python</h3>
+      <div class="code"><span class="lang">bash</span><pre>pip install ollama</pre></div>
+      <div class="code"><span class="lang">python · chat.py</span><pre><span class="k">import</span> ollama
+
+response = ollama.<span class="f">chat</span>(
+    model=<span class="s">"llama3.1:8B"</span>,
+    messages=[
+        {<span class="s">"role"</span>: <span class="s">"system"</span>, <span class="s">"content"</span>: <span class="s">"You are a concise assistant."</span>},
+        {<span class="s">"role"</span>: <span class="s">"user"</span>,   <span class="s">"content"</span>: <span class="s">"Why is the sky blue?"</span>},
+    ],
+)
+<span class="f">print</span>(response.message.content)
+
+<span class="c"># Streaming: tokens appear as they're generated</span>
+<span class="k">for</span> chunk <span class="k">in</span> ollama.<span class="f">chat</span>(
+    model=<span class="s">"llama3.1:8B"</span>,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Write a haiku about Python."</span>}],
+    stream=<span class="k">True</span>,
+):
+    <span class="f">print</span>(chunk.message.content, end=<span class="s">""</span>, flush=<span class="k">True</span>)</pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">6</div><div class="body">
+      <h3>Bonus: it speaks the OpenAI API format</h3>
+      <p>Many tools expect an OpenAI-style endpoint. Point them at Ollama and they just work, so you can swap between local and cloud by changing two lines.</p>
+      <div class="code"><span class="lang">python</span><pre><span class="k">from</span> openai <span class="k">import</span> OpenAI
+
+client = <span class="f">OpenAI</span>(base_url=<span class="s">"http://localhost:11434/v1"</span>, api_key=<span class="s">"ollama"</span>)  <span class="c"># key is ignored</span>
+r = client.chat.completions.<span class="f">create</span>(
+    model=<span class="s">"llama3.1:8B"</span>,
+    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Hello!"</span>}],
+)
+<span class="f">print</span>(r.choices[0].message.content)</pre></div>
+    </div></div>
+
+
+    <h2>Reference links</h2>
+    <p class="sub">Keep these open on screen while recording.</p>
+    <ul class="docs">
+      <li><span class="what">Ollama website</span><span class="why">Download &amp; model library</span><a href="https://ollama.com" target="_blank" rel="noopener">ollama.com</a></li>
+      <li><span class="what">API reference</span><span class="why">All REST endpoints &amp; parameters</span><a href="https://github.com/ollama/ollama/blob/main/docs/api.md" target="_blank" rel="noopener">github.com/ollama/ollama/docs/api.md</a></li>
+      <li><span class="what">Python library</span><span class="why">Official client</span><a href="https://github.com/ollama/ollama-python" target="_blank" rel="noopener">github.com/ollama/ollama-python</a></li>
+    </ul>
+
+
+    <div class="pager"><button data-go="home">← Why</button><button data-go="cloud">Next: Cloud API →</button></div>
+  </div>
+</section>
+
+<!-- ============================ CLOUD ============================ -->
+<section class="page cloud" id="cloud">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="eyebrow" style="color:var(--c)">Part 2 · Cloud API</div>
+      <h1>Call hosted models with the Gemini API</h1>
+      <p class="lead">Google AI Studio gives you an API key and a free tier for Gemini models. Everything below follows the official Gemini API docs.</p>
+    </div>
+
+    <div class="note"><strong>Why cloud?</strong> The strongest models, no hardware needed, huge context windows and multimodal input (images, audio, video, PDFs). The trade-off: your data is sent to a provider and heavy use costs money.</div>
+
+    <div class="note warn"><strong>Note.</strong> Model names, free-tier limits and data-usage terms change often. Check the <a href="https://ai.google.dev/gemini-api/docs/models" target="_blank" rel="noopener">models</a>, <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener">rate limits</a> and <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">pricing</a> pages for the current numbers, and swap the model name in the code below (written with <code>gemini-3.5-flash</code>) if a newer Flash model is listed.</div>
+
+    <div class="step"><div class="n">1</div><div class="body">
+      <h3>Get a free API key</h3>
+      <p>Sign in with a Google account at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> and click <em>Create API key</em>. Treat it like a password: never commit it or show it on screen.</p>
+      <div class="code"><span class="lang">bash</span><pre><span class="c"># the SDK reads GEMINI_API_KEY automatically</span>
+export GEMINI_API_KEY="your-key-here"</pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">2</div><div class="body">
+      <h3>Install the official SDK</h3>
+      <div class="code"><span class="lang">bash</span><pre>pip install google-genai</pre></div>
+      <p>Note the package is <code>google-genai</code> (the current SDK), not the older <code>google-generativeai</code>.</p>
+    </div></div>
+
+    <div class="step"><div class="n">3</div><div class="body">
+      <h3>First request</h3>
+      <div class="code"><span class="lang">python · gemini_basic.py</span><pre><span class="k">from</span> google <span class="k">import</span> genai
+
+client = genai.<span class="f">Client</span>()  <span class="c"># picks up GEMINI_API_KEY</span>
+
+response = client.models.<span class="f">generate_content</span>(
+    model=<span class="s">"gemini-3.5-flash"</span>,
+    contents=<span class="s">"Explain how AI works in a few words"</span>,
+)
+<span class="f">print</span>(response.text)</pre></div>
+      <p>Same call over plain REST, which is useful for showing there's no magic:</p>
+      <div class="code"><span class="lang">bash</span><pre>curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d '{"contents":[{"parts":[{"text":"Explain how AI works in a few words"}]}]}'</pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">4</div><div class="body">
+      <h3>System instructions &amp; settings</h3>
+      <p>Control behaviour with a system instruction and generation config such as temperature.</p>
+      <div class="code"><span class="lang">python</span><pre><span class="k">from</span> google <span class="k">import</span> genai
+<span class="k">from</span> google.genai <span class="k">import</span> types
+
+client = genai.<span class="f">Client</span>()
+
+response = client.models.<span class="f">generate_content</span>(
+    model=<span class="s">"gemini-3.5-flash"</span>,
+    contents=<span class="s">"What is a vector database?"</span>,
+    config=types.<span class="f">GenerateContentConfig</span>(
+        system_instruction=<span class="s">"You are a friendly teacher. Answer in 3 sentences."</span>,
+        temperature=<span class="k">0.3</span>,
+    ),
+)
+<span class="f">print</span>(response.text)</pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">5</div><div class="body">
+      <h3>Streaming</h3>
+      <div class="code"><span class="lang">python</span><pre>stream = client.models.<span class="f">generate_content_stream</span>(
+    model=<span class="s">"gemini-3.5-flash"</span>,
+    contents=<span class="s">"Write a short story about a robot learning to cook."</span>,
+)
+<span class="k">for</span> chunk <span class="k">in</span> stream:
+    <span class="f">print</span>(chunk.text, end=<span class="s">""</span>, flush=<span class="k">True</span>)</pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">6</div><div class="body">
+      <h3>Multi-turn chat</h3>
+      <p>The chat helper keeps the conversation history for you.</p>
+      <div class="code"><span class="lang">python</span><pre>chat = client.chats.<span class="f">create</span>(model=<span class="s">"gemini-3.5-flash"</span>)
+
+<span class="f">print</span>(chat.<span class="f">send_message</span>(<span class="s">"My name is Sam and I love cricket."</span>).text)
+<span class="f">print</span>(chat.<span class="f">send_message</span>(<span class="s">"What's my name and what do I like?"</span>).text)</pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">7</div><div class="body">
+      <h3>Structured JSON output</h3>
+      <p>Ask the model to return data that matches a schema, so your code can use it directly.</p>
+      <div class="code"><span class="lang">python</span><pre><span class="k">from</span> pydantic <span class="k">import</span> BaseModel
+
+<span class="k">class</span> <span class="f">Recipe</span>(BaseModel):
+    name: str
+    ingredients: list[str]
+    minutes: int
+
+response = client.models.<span class="f">generate_content</span>(
+    model=<span class="s">"gemini-3.5-flash"</span>,
+    contents=<span class="s">"Give me a simple pancake recipe."</span>,
+    config={
+        <span class="s">"response_mime_type"</span>: <span class="s">"application/json"</span>,
+        <span class="s">"response_schema"</span>: Recipe,
+    },
+)
+<span class="f">print</span>(response.parsed)  <span class="c"># a Recipe object</span></pre></div>
+    </div></div>
+
+    <h2>Official docs: points to cover</h2>
+    <p class="sub">Open each page on screen and talk through the highlighted point.</p>
+    <ul class="docs">
+      <li><span class="what">Quickstart</span><span class="why">Install, key, first request. Your backbone for the section.</span><a href="https://ai.google.dev/gemini-api/docs/quickstart" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/quickstart</a></li>
+      <li><span class="what">API keys</span><span class="why">How to create one and keep it safe (env vars, never in client code).</span><a href="https://ai.google.dev/gemini-api/docs/api-key" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/api-key</a></li>
+      <li><span class="what">Models</span><span class="why">Flash vs Pro vs Flash-Lite: speed, cost and capability trade-off.</span><a href="https://ai.google.dev/gemini-api/docs/models" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/models</a></li>
+      <li><span class="what">Pricing &amp; free tier</span><span class="why">What's free, what's paid, and the data-usage terms for each tier.</span><a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/pricing</a></li>
+      <li><span class="what">Rate limits</span><span class="why">Requests per minute / day and what a 429 error means.</span><a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/rate-limits</a></li>
+      <li><span class="what">Text generation</span><span class="why">System instructions, config, streaming, multi-turn chat.</span><a href="https://ai.google.dev/gemini-api/docs/text-generation" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/text-generation</a></li>
+      <li><span class="what">Structured output</span><span class="why">JSON schemas for reliable, parseable responses.</span><a href="https://ai.google.dev/gemini-api/docs/structured-output" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/structured-output</a></li>
+      <li><span class="what">Function calling</span><span class="why">The bridge to agents (leads into Part 3).</span><a href="https://ai.google.dev/gemini-api/docs/function-calling" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs/function-calling</a></li>
+      <li><span class="what">Image / video / audio / docs</span><span class="why">Multimodal input: send files, not just text.</span><a href="https://ai.google.dev/gemini-api/docs" target="_blank" rel="noopener">ai.google.dev/gemini-api/docs</a></li>
+      <li><span class="what">Google AI Studio</span><span class="why">Browser playground to test prompts before writing code.</span><a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a></li>
+    </ul>
+
+    <h2>Cloud best practices</h2>
+    <div class="grid g3">
+      <div class="card"><h3>🔐 Protect your key</h3><p>Use environment variables or a <code>.env</code> file in <code>.gitignore</code>. Never paste a key into a public repo or frontend.</p></div>
+      <div class="card"><h3>⏱ Expect limits</h3><p>Free tier has rate limits. Add retries with backoff and handle 429 errors gracefully.</p></div>
+      <div class="card"><h3>🔒 Mind the data</h3><p>Check the terms for your tier before sending anything private or confidential. This is where local models shine.</p></div>
+    </div>
+
+
+    <div class="pager"><button data-go="local">← Local</button><button data-go="agents">Next: Agents →</button></div>
+  </div>
+</section>
+
+<!-- ============================ AGENTS ============================ -->
+<section class="page agents" id="agents">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="eyebrow" style="color:var(--c)">Part 3 · Agents</div>
+      <h1>Give an LLM tools with LangChain</h1>
+      <p class="lead">A chat model can only produce text. An agent can decide to call your functions, read the results, and keep going until the job is done.</p>
+    </div>
+
+    <h2 style="margin-top:0">From LLMs to agents</h2>
+    <p class="sub">Why a plain model isn't enough, what tools are, and why agents are showing up now.</p>
+    <div class="grid g3">
+      <div class="card"><div class="big">💬</div><h3>An LLM only talks</h3><p>A model takes text in and gives text out. Its knowledge stops at its training date, it can't look anything up, it can be shaky at exact maths, and it can't do anything in the real world.</p></div>
+      <div class="card"><div class="big">🔧</div><h3>Tools fix that</h3><p>A tool is just a function you write (check weather, search the web, query a database, send an email) plus a description. The model reads the description and asks for the tool when it needs it.</p></div>
+      <div class="card"><div class="big">🔁</div><h3>An agent is the loop</h3><p>The model picks a tool, your code runs it, the result goes back to the model, and it repeats until the task is done. That loop is what turns a chatbot into something that gets work done.</p></div>
+    </div>
+    <h3 style="margin-top:28px">Why agents now?</h3>
+    <ul style="color:var(--muted);margin-top:8px">
+      <li><strong style="color:var(--text)">Models got good at tool calling.</strong> Modern models, including open ones you can run in Ollama, can reliably return a structured "call this function with these arguments" request.</li>
+      <li><strong style="color:var(--text)">Frameworks standardised the loop.</strong> LangChain handles the plumbing, so you write plain Python functions instead of parsing model output by hand.</li>
+      <li><strong style="color:var(--text)">Real tasks need several steps.</strong> "Weather in Delhi and 23 * 7 + 4" needs two different lookups. One prompt can't do that, but a loop with tools can.</li>
+    </ul>
+    <div class="note"><strong>Remember:</strong> the model is the brain, the tools are the hands. A bigger model picks tools more reliably, and every tool you give it is something it can actually do, so only hand over what you're comfortable with.</div>
+
+    <h2>What is an agent?</h2>
+    <p class="sub">An agent is an LLM, plus tools, running in a loop.</p>
+    <div class="flow">
+      <div class="node">User question</div><span class="arrow">→</span>
+      <div class="node hot">LLM<small>decides what to do</small></div><span class="arrow">→</span>
+      <div class="node">Tool call<small>your Python function</small></div><span class="arrow">→</span>
+      <div class="node">Result<small>fed back to LLM</small></div><span class="arrow">↺</span>
+      <div class="node">Final answer</div>
+    </div>
+    <div class="note"><strong>Key idea:</strong> the model never runs your code. It returns a structured request ("call <code>get_weather</code> with <code>city='Delhi'</code>"). The framework runs the function and hands the result back.</div>
+
+    <div class="step"><div class="n">1</div><div class="body">
+      <h3>Install</h3>
+      <div class="code"><span class="lang">bash</span><pre>pip install -U langchain langchain-ollama langchain-google-genai</pre></div>
+      <p>Pull a model that supports tool calling (not every model does). <code>llama3.1</code> and <code>qwen3</code> do; check the <em>tools</em> tag on the Ollama library.</p>
+      <div class="code"><span class="lang">bash</span><pre>ollama pull llama3.1:8B</pre></div>
+    </div></div>
+
+    <div class="step"><div class="n">2</div><div class="body">
+      <h3>Turn Python functions into tools</h3>
+      <p>The <code>@tool</code> decorator uses the function name, type hints and <strong>docstring</strong> to tell the model what the tool does. A good docstring is a good prompt.</p>
+      <div class="code"><span class="lang">python · tools.py</span><pre><span class="k">from</span> langchain.tools <span class="k">import</span> tool
+
+<span class="f">@tool</span>
+<span class="k">def</span> <span class="f">get_weather</span>(city: str) -&gt; str:
+    <span class="s">"""Get the current weather for a city."""</span>
+    <span class="c"># Demo data. Replace with a real weather API call.</span>
+    fake = {<span class="s">"delhi"</span>: <span class="s">"34°C, hazy"</span>, <span class="s">"london"</span>: <span class="s">"14°C, rain"</span>, <span class="s">"tokyo"</span>: <span class="s">"22°C, clear"</span>}
+    <span class="k">return</span> fake.<span class="f">get</span>(city.<span class="f">lower</span>(), <span class="s">"no data for that city"</span>)
+
+<span class="f">@tool</span>
+<span class="k">def</span> <span class="f">calculate</span>(expression: str) -&gt; str:
+    <span class="s">"""Evaluate a basic math expression like '23 * 7 + 4'."""</span>
+    allowed = <span class="f">set</span>(<span class="s">"0123456789+-*/(). "</span>)
+    <span class="k">if</span> <span class="k">not</span> <span class="f">set</span>(expression) &lt;= allowed:
+        <span class="k">return</span> <span class="s">"Only numbers and + - * / ( ) are allowed."</span>
+    <span class="k">return</span> <span class="f">str</span>(<span class="f">eval</span>(expression))</pre></div>
+      <div class="note warn"><strong>Careful with eval.</strong> The character allow-list above is fine for a demo, but never <code>eval</code> raw model output in real code. Use a proper math parser instead.</div>
+    </div></div>
+
+    <div class="step"><div class="n">3</div><div class="body">
+      <h3>Build the agent (local model)</h3>
+      <p><code>create_agent</code> wires the model, tools and the loop together.</p>
+      <div class="code"><span class="lang">python · agent_local.py</span><pre><span class="k">from</span> langchain.agents <span class="k">import</span> create_agent
+<span class="k">from</span> langchain_ollama <span class="k">import</span> ChatOllama
+<span class="k">from</span> tools <span class="k">import</span> get_weather, calculate
+
+model = <span class="f">ChatOllama</span>(model=<span class="s">"llama3.1:8B"</span>, temperature=<span class="k">0</span>)
+
+agent = <span class="f">create_agent</span>(
+    model,
+    tools=[get_weather, calculate],
+    system_prompt=<span class="s">"You are a helpful assistant. Use tools when they help."</span>,
+)
+
+result = agent.<span class="f">invoke</span>({
+    <span class="s">"messages"</span>: [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"What's the weather in Delhi, and what is 23 * 7 + 4?"</span>}]
+})
+
+<span class="c"># Print the whole trace: user → tool call → tool result → answer</span>
+<span class="k">for</span> m <span class="k">in</span> result[<span class="s">"messages"</span>]:
+    m.<span class="f">pretty_print</span>()</pre></div>
+      <p>The trace is the best part of the demo: pause on the <em>AI message with tool calls</em>, then the <em>Tool message</em>, then the final answer.</p>
+    </div></div>
+
+    <div class="step"><div class="n">4</div><div class="body">
+      <h3>Swap in the cloud model: one line changes</h3>
+      <p>Tools and agent stay identical. Only the model object changes. That's the payoff of using a framework.</p>
+      <div class="code"><span class="lang">python · agent_cloud.py</span><pre><span class="k">from</span> langchain_google_genai <span class="k">import</span> ChatGoogleGenerativeAI
+
+<span class="c"># reads GOOGLE_API_KEY from the environment</span>
+model = <span class="f">ChatGoogleGenerativeAI</span>(model=<span class="s">"gemini-3.5-flash"</span>, temperature=<span class="k">0</span>)
+
+agent = <span class="f">create_agent</span>(model, tools=[get_weather, calculate])</pre></div>
+      <div class="note"><strong>Heads-up:</strong> <code>langchain-google-genai</code> reads <code>GOOGLE_API_KEY</code> (or you can pass <code>google_api_key=...</code>). If your key is in <code>GEMINI_API_KEY</code>, export it under that name too: <code>export GOOGLE_API_KEY=$GEMINI_API_KEY</code>.</div>
+    </div></div>
+
+    <div class="step"><div class="n">5</div><div class="body">
+      <h3>Stream the steps live</h3>
+      <div class="code"><span class="lang">python</span><pre><span class="k">for</span> step <span class="k">in</span> agent.<span class="f">stream</span>(
+    {<span class="s">"messages"</span>: [{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Compare the weather in London and Tokyo."</span>}]},
+    stream_mode=<span class="s">"values"</span>,
+):
+    step[<span class="s">"messages"</span>][-<span class="k">1</span>].<span class="f">pretty_print</span>()</pre></div>
+    </div></div>
+
+    <h2>Reference links</h2>
+    <ul class="docs">
+      <li><span class="what">LangChain docs</span><span class="why">Overview, quickstart, agents</span><a href="https://docs.langchain.com" target="_blank" rel="noopener">docs.langchain.com</a></li>
+      <li><span class="what">Agents guide</span><span class="why"><code>create_agent</code>, middleware, streaming</span><a href="https://docs.langchain.com/oss/python/langchain/agents" target="_blank" rel="noopener">docs.langchain.com/oss/python/langchain/agents</a></li>
+      <li><span class="what">Tools guide</span><span class="why">The <code>@tool</code> decorator and tool schemas</span><a href="https://docs.langchain.com/oss/python/langchain/tools" target="_blank" rel="noopener">docs.langchain.com/oss/python/langchain/tools</a></li>
+      <li><span class="what">Ollama integration</span><span class="why"><code>ChatOllama</code></span><a href="https://docs.langchain.com/oss/python/integrations/chat/ollama" target="_blank" rel="noopener">docs.langchain.com/oss/python/integrations/chat/ollama</a></li>
+      <li><span class="what">Google Gemini integration</span><span class="why"><code>ChatGoogleGenerativeAI</code></span><a href="https://docs.langchain.com/oss/python/integrations/chat/google_generative_ai" target="_blank" rel="noopener">docs.langchain.com/oss/python/integrations/chat/google_generative_ai</a></li>
+    </ul>
+    <p class="sub" style="margin-top:10px">LangChain reorganised its docs and APIs recently. If a link or import has moved, search the docs site for the page title.</p>
+
+
+    <div class="pager"><button data-go="cloud">← Cloud API</button><button data-go="home">Back to start ↺</button></div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var order = ["home", "local", "cloud", "agents"];
+  var pages = {};
+  order.forEach(function (id) { pages[id] = document.getElementById(id); });
+  var tabs = document.querySelectorAll('.tab[role="tab"]');
+
+  function show(id, push) {
+    if (!pages[id]) id = "home";
+    order.forEach(function (k) { pages[k].classList.toggle("active", k === id); });
+    tabs.forEach(function (t) { t.setAttribute("aria-selected", String(t.dataset.tab === id)); });
+    if (push !== false) { try { history.replaceState(null, "", "#" + id); } catch (e) {} }
+    window.scrollTo(0, 0);
+  }
+
+  document.addEventListener("click", function (e) {
+    var go = e.target.closest("[data-go], .tab[data-tab]");
+    if (go) { show(go.dataset.go || go.dataset.tab); return; }
+    var btn = e.target.closest("button.copy");
+    if (btn) {
+      var text = btn.parentElement.querySelector("pre").innerText;
+      var done = function () { btn.textContent = "Copied ✓"; setTimeout(function () { btn.textContent = "Copy"; }, 1400); };
+      if (navigator.clipboard) { navigator.clipboard.writeText(text).then(done, done); } else { done(); }
+    }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea") return;
+    var cur = order.findIndex(function (k) { return pages[k].classList.contains("active"); });
+    if (e.key >= "1" && e.key <= "4") show(order[Number(e.key) - 1]);
+    else if (e.key === "ArrowRight") show(order[Math.min(cur + 1, order.length - 1)]);
+    else if (e.key === "ArrowLeft") show(order[Math.max(cur - 1, 0)]);
+  });
+
+  // copy buttons
+  document.querySelectorAll(".code").forEach(function (c) {
+    var b = document.createElement("button");
+    b.className = "copy"; b.textContent = "Copy"; b.type = "button";
+    c.appendChild(b);
+  });
+
+  show((location.hash || "#home").slice(1), false);
+})();
+</script>
+</body>
+</html>
