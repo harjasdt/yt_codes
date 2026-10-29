@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>aireview Intro</title>
+<style>
+  :root {
+    --bg: #fafaf7; --panel: #ffffff; --ink: #1c1b1a; --muted: #6b6963; --line: #e3e0d8;
+    --accent: #3b5bdb; --accent-soft: #e7ecff;
+    --llm: #7048e8; --llm-soft: #efe9ff;
+    --py: #2b8a3e; --py-soft: #e6f4ea;
+    --route: #e8590c; --route-soft: #fff0e6;
+    --code-bg: #1e1e24; --code-ink: #e8e6e3; --code-dim: #8b8b96;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141416; --panel: #1c1c20; --ink: #ecebe8; --muted: #9a9890; --line: #2e2e34;
+      --accent: #7c9aff; --accent-soft: #232a4a;
+      --llm: #a78bfa; --llm-soft: #2a2347;
+      --py: #5fd07a; --py-soft: #1d3324;
+      --route: #ff9552; --route-soft: #3a2616;
+      --code-bg: #0e0e11;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141416; --panel: #1c1c20; --ink: #ecebe8; --muted: #9a9890; --line: #2e2e34;
+    --accent: #7c9aff; --accent-soft: #232a4a;
+    --llm: #a78bfa; --llm-soft: #2a2347;
+    --py: #5fd07a; --py-soft: #1d3324;
+    --route: #ff9552; --route-soft: #3a2616;
+    --code-bg: #0e0e11;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.5; }
+  header { padding: 28px 24px 0; max-width: 1180px; margin: 0 auto; }
+  h1 { margin: 0; font-size: 30px; letter-spacing: -0.02em; }
+  h1 span { color: var(--accent); }
+  .tag { color: var(--muted); margin: 4px 0 14px; font-size: 16px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .chip { font: 13px var(--mono); padding: 3px 10px; border: 1px solid var(--line); border-radius: 99px; background: var(--panel); }
+  nav { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
+  nav button {
+    font: 600 16px var(--sans); color: var(--muted); background: none; border: none; cursor: pointer;
+    padding: 12px 18px; border-bottom: 3px solid transparent; margin-bottom: -1px;
+  }
+  nav button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  nav button:focus-visible, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  nav .hint { margin-left: auto; align-self: center; color: var(--muted); font-size: 13px; }
+  main { max-width: 1180px; margin: 0 auto; padding: 24px; }
+  section[hidden] { display: none; }
+  .btn { font: 600 14px var(--sans); border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+         border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn:disabled { opacity: .4; cursor: default; }
+
+  /* ---------- Packaging tab ---------- */
+  .stepper { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+  .stepper button { font: 600 14px var(--sans); border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+                    border-radius: 99px; padding: 6px 14px; cursor: pointer; }
+  .stepper button[aria-current="step"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+  .stage { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .stage { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .card h2 { margin: 0 0 6px; font-size: 26px; letter-spacing: -0.01em; }
+  .card .lead { font-size: 18px; margin: 0 0 14px; }
+  dl.why { margin: 0; } dl.why dt { font: 700 12px var(--sans); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-top: 14px; }
+  dl.why dd { margin: 3px 0 0; font-size: 16px; }
+  dl.why code { font: 14px var(--mono); background: var(--line); padding: 1px 6px; border-radius: 4px; }
+  .say { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; margin: 14px 0; font-size: 15px; }
+  .say b { color: var(--accent); }
+  ul.pts { margin: 8px 0 0; padding-left: 20px; }
+  ul.pts li { margin: 6px 0; }
+  .term, pre.code { background: var(--code-bg); color: var(--code-ink); border-radius: 10px; padding: 16px 18px;
+                    font: 14px/1.65 var(--mono); overflow-x: auto; margin: 0 0 12px; white-space: pre; }
+  .term .c, .code .c { color: var(--code-dim); }
+  .term .p { color: #7ee787; }
+  .term .bad { color: #ff7b72; }
+  .term .ok { color: #7ee787; }
+  .k { color: #ff9e64; } .s { color: #9ece6a; } .n { color: #7dcfff; }
+  .tree .dir { color: #7dcfff; } .tree .new { color: #9ece6a; font-weight: 700; }
+  .blk { border: 1px solid transparent; border-radius: 8px; padding: 6px 10px; margin: 0 -10px; cursor: pointer; }
+  .blk:hover, .blk.on { background: rgba(124,154,255,.16); border-color: rgba(124,154,255,.5); }
+  .note { min-height: 62px; }
+  .flowline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font: 14px var(--mono); }
+  .flowline .box { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 6px 10px; }
+  .flowline .arrow { color: var(--muted); }
+
+  /* ---------- Flow tab ---------- */
+  .flowwrap { display: grid; grid-template-columns: minmax(0, 580px) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 960px) { .flowwrap { grid-template-columns: 1fr; } }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .controls label { font-size: 14px; color: var(--muted); display: flex; gap: 6px; align-items: center; cursor: pointer; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  svg { width: 100%; height: auto; display: block; }
+  .node { cursor: pointer; }
+  .node rect, .node polygon { fill: var(--panel); stroke: var(--line); stroke-width: 1.5; transition: all .25s; }
+  .node.py rect { stroke: var(--py); } .node.py rect { fill: var(--py-soft); }
+  .node.llm rect { stroke: var(--llm); fill: var(--llm-soft); }
+  .node.route polygon { stroke: var(--route); fill: var(--route-soft); }
+  .node text { fill: var(--ink); font: 600 14px var(--sans); text-anchor: middle; pointer-events: none; }
+  .node text.sub { font: 12px var(--mono); fill: var(--muted); font-weight: 400; }
+  .node.active rect, .node.active polygon { stroke-width: 4; filter: drop-shadow(0 0 8px var(--accent)); }
+  .node.sel rect, .node.sel polygon { stroke: var(--accent); stroke-width: 3; }
+  .node.dim { opacity: .35; }
+  .edge { fill: none; stroke: var(--muted); stroke-width: 2; transition: all .25s; }
+  .edge.dashed { stroke-dasharray: 6 5; }
+  .edge.active { stroke: var(--accent); stroke-width: 4; }
+  .edge.dim { opacity: .25; }
+  .elabel { font: 12px var(--mono); fill: var(--muted); }
+  .elabel.hot { fill: var(--llm); font-weight: 700; }
+  .detail h2 { margin: 0 0 2px; font-size: 24px; }
+  .detail .file { font: 14px var(--mono); color: var(--accent); margin-bottom: 12px; }
+  .kv { display: grid; grid-template-columns: 90px 1fr; gap: 6px 12px; font-size: 15px; margin: 12px 0; }
+  .kv dt { color: var(--muted); } .kv dd { margin: 0; }
+  .kv code, .detail code { font: 13.5px var(--mono); background: var(--line); padding: 1px 6px; border-radius: 4px; }
+  .pill { font: 600 12px var(--sans); padding: 2px 9px; border-radius: 99px; }
+  .pill.py { background: var(--py-soft); color: var(--py); } .pill.llm { background: var(--llm-soft); color: var(--llm); }
+  .pill.route { background: var(--route-soft); color: var(--route); }
+  footer { max-width: 1180px; margin: 0 auto; padding: 0 24px 40px; color: var(--muted); font-size: 13px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <h1><span>ai</span>review</h1>
+  <p class="tag">A local AI code reviewer you can install as a real command. No cloud, no agent, just Python around a model.</p>
+  <div class="chips"><span class="chip">Python</span><span class="chip">Ollama · llama3.1:8b</span><span class="chip">Pydantic</span><span class="chip">Typer</span><span class="chip">Rich</span><span class="chip">hatchling</span></div>
+  <nav role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-pack" aria-selected="true" aria-controls="pack">1 · Packaging from scratch</button>
+    <button role="tab" id="tab-flow" aria-selected="false" aria-controls="flow">2 · How the app flows</button>
+    <span class="hint">keys: 1 / 2 tabs · ← → steps · space plays the flow</span>
+  </nav>
+</header>
+
+<main>
+<!-- ===================== PACKAGING ===================== -->
+<section id="pack" role="tabpanel" aria-labelledby="tab-pack">
+  <div class="stepper" id="stepper"></div>
+  <div class="stage">
+    <div class="card" id="packText"></div>
+    <div id="packVisual"></div>
+  </div>
+  <div style="display:flex; gap:10px; margin-top:18px">
+    <button class="btn" id="prev">← Back</button>
+    <button class="btn primary" id="next">Next →</button>
+  </div>
+</section>
+
+<!-- ===================== FLOW ===================== -->
+<section id="flow" role="tabpanel" aria-labelledby="tab-flow" hidden>
+  <div class="flowwrap">
+    <div>
+      <div class="controls">
+        <button class="btn primary" id="play">▶ Play the run</button>
+        <button class="btn" id="reset">Reset</button>
+        <label><input type="checkbox" id="serious" checked> Review finds a high/critical issue</label>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--py)"></i>plain Python</span>
+        <span><i style="background:var(--llm)"></i>LLM call</span>
+        <span><i style="background:var(--route)"></i>decision in code</span>
+      </div>
+      <svg id="diagram" viewBox="0 0 580 690" role="img" aria-label="Flow diagram of the aireview pipeline"></svg>
+    </div>
+    <div class="card detail" id="detail"></div>
+  </div>
+</section>
+</main>
+<footer>Prompts live in <code>src/aireview/prompts/</code> as plain .md files. In the flow tab, click any box for its file, input, output and prompt. Run <code>aireview --trace</code> to see every prompt and reply.</footer>
+
+<script>
+/* ---------------- tabs ---------------- */
+const tabs = { pack: document.getElementById('tab-pack'), flow: document.getElementById('tab-flow') };
+function showTab(id) {
+  for (const k in tabs) {
+    tabs[k].setAttribute('aria-selected', k === id);
+    document.getElementById(k).hidden = k !== id;
+  }
+  try { localStorage.setItem('aireview-tab', id); } catch (e) {}
+}
+tabs.pack.onclick = () => showTab('pack');
+tabs.flow.onclick = () => showTab('flow');
+
+/* ---------------- packaging stepper ---------------- */
+const steps = [
+  {
+    name: 'A script',
+    title: 'It starts as one script',
+    lead: 'It works, but only on your machine, only from this folder.',
+    what: 'One Python file that does the whole job.',
+    why: 'Every project starts here, and that is fine. The trouble only appears when you want to use the tool somewhere else.',
+    how: 'You run it by path with <code>python review.py</code>, from the folder that holds it. Libraries are installed by hand with <code>pip</code>.',
+    solves: 'Nothing yet. This step is the problem: it only runs from one folder, needs manual setup, and cannot be called from your other repos.',
+    visual: () => `<div class="term"><span class="c"># where the code lives</span>
+<span class="dir">my_project/</span>
+└── review.py
+
+<span class="c"># it runs here...</span>
+<span class="p">$</span> cd my_project &amp;&amp; python review.py   <span class="ok">✔</span>
+
+<span class="c"># ...but not from your other repos</span>
+<span class="p">$</span> cd ~/work/other-repo
+<span class="p">$</span> review
+<span class="bad">zsh: command not found: review</span></div>`
+  },
+  {
+    name: 'A package',
+    title: 'Turn it into a package',
+    lead: 'A package is just a folder Python can import by name.',
+    what: 'A folder of modules with an <code>__init__.py</code> file. Python treats the folder as one importable thing named <code>aireview</code>.',
+    why: 'One huge file is hard to read, test or reuse. Splitting by responsibility gives every file one job: git, LLM, schema, chain, UI, CLI.',
+    how: '<code>__init__.py</code> marks the folder as a package. Modules import each other by name, like <code>from .chain import run_chain</code>.',
+    solves: 'Organisation and reuse. Code is imported by name instead of by file path, and each piece can be changed on its own.',
+    visual: () => `<div class="term tree"><span class="dir">aireview/</span>
+├── <span class="new">__init__.py</span>        <span class="c"># marks the folder as a package</span>
+├── <span class="new">git_inspector.py</span>   <span class="c"># runs git diff</span>
+├── <span class="new">llm.py</span>             <span class="c"># talks to Ollama</span>
+├── <span class="new">schema.py</span>          <span class="c"># Pydantic models</span>
+├── <span class="new">chain.py</span>           <span class="c"># LLM chain + router</span>
+├── <span class="new">ui.py</span>              <span class="c"># Rich output</span>
+└── <span class="new">cli.py</span>             <span class="c"># entry function: app()</span></div>
+<div class="term"><span class="c"># inside cli.py: modules import each other by name</span>
+<span class="k">from</span> .chain <span class="k">import</span> run_chain
+<span class="k">from</span> .git_inspector <span class="k">import</span> get_diff</div>`
+  },
+  {
+    name: 'src layout',
+    title: 'Put it inside src/',
+    lead: 'One extra folder, and a whole class of bugs disappears.',
+    what: 'The package lives in <code>src/aireview/</code>. The project root only holds config files like <code>pyproject.toml</code> and the README.',
+    why: 'If the package sits at the project root, Python can import it straight from the current folder without installing it. Everything passes locally, then breaks for users because the installed copy is missing a file or a dependency.',
+    how: 'Nothing inside <code>src/</code> is importable until it is installed, so every run uses the installed copy, which is exactly what a user gets.',
+    solves: 'The classic "works on my machine" bugs: forgotten data files, missing dependencies, wrong imports.',
+    visual: () => `<div class="term tree"><span class="dir">cli_tool/</span>
+├── <span class="new">pyproject.toml</span>        <span class="c"># the packaging brain (next step)</span>
+├── README.md
+└── <span class="new">src/</span>
+    └── <span class="dir">aireview/</span>
+        ├── __init__.py
+        ├── cli.py
+        ├── chain.py
+        ├── llm.py
+        └── <span class="dir">prompts/</span>        <span class="c"># plain .md files, shipped too</span>
+            ├── review.md
+            ├── fix_advisor.md
+            └── commit_writer.md</div>`
+  },
+  {
+    name: 'pyproject.toml',
+    title: 'pyproject.toml is the manifest',
+    lead: 'One file that tells pip what this is, what it needs and what command to create.',
+    what: 'One TOML file at the project root that describes the project.',
+    why: 'pip needs to know how to build your code, what it is called, what it depends on and which command to create. Older projects spread this over <code>setup.py</code>, <code>setup.cfg</code> and <code>requirements.txt</code>. <code>pyproject.toml</code> is the modern single standard.',
+    how: 'Four blocks: <code>[build-system]</code> picks the builder, <code>[project]</code> holds name and version, <code>dependencies</code> lists libraries, <code>[project.scripts]</code> maps a command to a function. Click each block on the right.',
+    solves: 'Repeatable installs and the command name, all in one readable file.',
+    visual: () => {
+      const blocks = [
+        ['build-system', `<span class="c"># who builds the package</span>
+[build-system]
+requires = [<span class="s">"hatchling"</span>]
+build-backend = <span class="s">"hatchling.build"</span>`, '<b>Build backend.</b> pip downloads hatchling to turn your folder into an installable wheel. You never call it yourself.'],
+        ['project', `<span class="c"># what it is</span>
+[project]
+name = <span class="s">"aireview"</span>
+version = <span class="s">"0.1.0"</span>
+requires-python = <span class="s">"&gt;=3.10"</span>`, '<b>Identity.</b> Name, version and the Python versions it supports. This is what <code>pip list</code> shows.'],
+        ['dependencies', `<span class="c"># what it needs</span>
+dependencies = [
+  <span class="s">"ollama"</span>, <span class="s">"pydantic"</span>,
+  <span class="s">"rich"</span>, <span class="s">"typer"</span>,
+]`, '<b>Dependencies.</b> pip installs these automatically, so the user never runs a separate "install requirements" step.'],
+        ['scripts', `<span class="c"># the command it creates</span>
+[project.scripts]
+aireview = <span class="s">"aireview.cli:app"</span>`, '<b>The magic line.</b> Read it as: command <code>aireview</code> runs the function <code>app</code> in the module <code>aireview.cli</code>.']
+      ];
+      return `<pre class="code" id="toml">${blocks.map((b, i) => `<div class="blk${i === 3 ? ' on' : ''}" data-i="${i}">${b[1]}</div>`).join('')}</pre>
+      <div class="say note" id="tomlNote">${blocks[3][2]}</div>
+      <script type="application/json" id="tomlData">${JSON.stringify(blocks.map(b => b[2]))}<\/script>`;
+    }
+  },
+  {
+    name: 'pip install -e .',
+    title: 'Install it',
+    lead: 'One command wires everything together.',
+    what: 'Installs your project into the active virtual environment, in editable mode.',
+    why: 'Installing turns the manifest into something real: dependencies arrive and the command appears. The <code>-e</code> flag matters while you are still developing.',
+    how: 'pip reads <code>pyproject.toml</code>, builds with hatchling, installs the dependencies, and writes a launcher at <code>.venv/bin/aireview</code> that calls <code>aireview.cli:app</code>. Editable means the venv points at your <code>src/</code> folder instead of copying it.',
+    solves: 'Manual dependency installs, and re-installing after every code change. Edit a file, run the command, see the change.',
+    visual: () => `<div class="term"><span class="p">$</span> python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+<span class="p">$</span> pip install -e .
+<span class="c">  → builds with hatchling
+  → installs ollama, pydantic, rich, typer
+  → creates .venv/bin/aireview</span></div>
+<div class="term"><span class="c"># the launcher pip generated, .venv/bin/aireview</span>
+<span class="k">#!</span>/…/.venv/bin/python
+<span class="k">from</span> aireview.cli <span class="k">import</span> app
+<span class="k">import</span> sys
+sys.exit(app())</div>
+<div class="flowline"><span class="box">you type <b>aireview</b></span><span class="arrow">→</span><span class="box">launcher</span><span class="arrow">→</span><span class="box">aireview.cli:app()</span><span class="arrow">→</span><span class="box">your code in src/</span></div>`
+  },
+  {
+    name: 'Run anywhere',
+    title: 'Now it is a real command',
+    lead: 'Same tool, any git repo on your machine.',
+    what: 'A real command that works in any directory while the venv is active.',
+    why: 'This is the goal of the whole exercise: the tool is reachable from every repo, not only from its own folder.',
+    how: 'The shell finds <code>aireview</code> on the PATH, the launcher runs your code. Data files such as the prompts are read from inside the package with <code>importlib.resources</code>, so they travel with it.',
+    solves: 'Sharing. The same project can be built with <code>python -m build</code> and uploaded to PyPI so anyone can <code>pip install</code> it.',
+    visual: () => `<div class="term"><span class="p">$</span> cd ~/work/other-repo
+<span class="p">$</span> git add .
+<span class="p">$</span> aireview
+<span class="ok">✔</span> Inspecting git changes   staged: 3 files, +42 -7
+<span class="ok">✔</span> Connecting to Ollama (llama3.1:8b)
+<span class="ok">✔</span> 1/3 Reviewing diff        risk 8/10, 2 findings
+<span class="ok">✔</span> 2/3 Planning fixes        2 steps
+<span class="ok">✔</span> 3/3 Writing commit message</div>
+<div class="term"><span class="c"># prompts are read from inside the installed package</span>
+PROMPTS = files(<span class="s">"aireview"</span>) / <span class="s">"prompts"</span>
+text = (PROMPTS / <span class="s">"review.md"</span>).read_text()</div>`
+  }
+];
+
+let cur = 0;
+const stepper = document.getElementById('stepper');
+const text = document.getElementById('packText');
+const vis = document.getElementById('packVisual');
+function renderStep() {
+  const s = steps[cur];
+  stepper.innerHTML = steps.map((x, i) => `<button data-i="${i}" ${i === cur ? 'aria-current="step"' : ''}>${i + 1}. ${x.name}</button>`).join('');
+  const row = (label, body) => `<dt>${label}</dt><dd>${body}</dd>`;
+  text.innerHTML = `<h2>${s.title}</h2><p class="lead">${s.lead}</p>
+    <dl class="why">${row('What it is', s.what)}${row('Why we need it', s.why)}${row('How it works', s.how)}${row('What it solves', s.solves)}</dl>`;
+  vis.innerHTML = s.visual();
+  document.getElementById('prev').disabled = cur === 0;
+  document.getElementById('next').disabled = cur === steps.length - 1;
+  const toml = document.getElementById('toml');
+  if (toml) {
+    const notes = JSON.parse(document.getElementById('tomlData').textContent);
+    toml.querySelectorAll('.blk').forEach(b => b.onclick = () => {
+      toml.querySelectorAll('.blk').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      document.getElementById('tomlNote').innerHTML = notes[b.dataset.i];
+    });
+  }
+}
+stepper.onclick = e => { const b = e.target.closest('button'); if (b) { cur = +b.dataset.i; renderStep(); } };
+document.getElementById('prev').onclick = () => { if (cur > 0) { cur--; renderStep(); } };
+document.getElementById('next').onclick = () => { if (cur < steps.length - 1) { cur++; renderStep(); } };
+renderStep();
+
+/* ---------------- flow diagram ---------------- */
+const NODES = {
+  term:   { kind: 'py',    x: 190, y: 10,  w: 220, h: 52, t: '$ aireview', s: 'you type this',
+            file: 'pyproject.toml → [project.scripts]', what: 'The launcher pip created calls <code>aireview.cli:app</code>. Typer parses the flags and runs one function.',
+            inp: 'Command-line flags', out: 'A call to <code>main()</code>' },
+  git:    { kind: 'py',    x: 190, y: 100, w: 220, h: 52, t: 'Read the diff', s: 'git_inspector.py',
+            file: 'src/aireview/git_inspector.py', what: 'Runs <code>git diff --staged</code> and <code>git diff</code> through <code>subprocess</code>, and also diffs brand-new untracked files against <code>/dev/null</code>. Then it fits everything into a budget: source files first, each file capped, lockfiles and binaries ignored. Anything trimmed is reported as a partial review.',
+            inp: 'Your repo', out: 'One combined diff that fits the model window, plus file and line counts' },
+  check:  { kind: 'py',    x: 190, y: 190, w: 220, h: 52, t: 'Is Ollama ready?', s: 'llm.check_model()',
+            file: 'src/aireview/llm.py', what: 'Asks the local Ollama server for its model list. Fails fast with a helpful message if it is not running or the model is not pulled.',
+            inp: 'Model name', out: 'OK or a clear error' },
+  review: { kind: 'llm',   x: 190, y: 280, w: 220, h: 56, t: '1 · Review', s: 'LLM call 1',
+            file: 'src/aireview/llm.py → review_diff()', prompt: 'prompts/review.md', schema: 'ReviewResult',
+            what: 'A "Principal Engineer" persona reviews the diff and answers in JSON that must match the schema.',
+            inp: 'Diff text', out: '<code>ReviewResult</code>: type, 50-char summary, breaking flag, risk 1-10, findings' },
+  router: { kind: 'route', x: 190, y: 380, w: 220, h: 84, t: 'Serious finding?', s: 'chain.py',
+            file: 'src/aireview/chain.py', what: 'One line of Python: is any finding <code>high</code> or <code>critical</code>? Code picks the path, no agent involved.',
+            inp: '<code>ReviewResult</code>', out: 'Run step 2, or skip it' },
+  fix:    { kind: 'llm',   x: 440, y: 392, w: 130, h: 60, t: '2 · Fix plan', s: 'LLM call 2',
+            file: 'src/aireview/llm.py → advise_fixes()', prompt: 'prompts/fix_advisor.md', schema: 'FixPlan',
+            what: 'A different persona turns only the serious findings into concrete, code-level fix steps.',
+            inp: 'Diff + serious findings (from step 1)', out: '<code>FixPlan</code>: file, problem, fix' },
+  commit: { kind: 'llm',   x: 190, y: 510, w: 220, h: 56, t: '3 · Commit message', s: 'LLM call 3',
+            file: 'src/aireview/llm.py → write_commit_message()', prompt: 'prompts/commit_writer.md', schema: 'CommitMessage',
+            what: 'Writes a Conventional Commit: a subject of at most 50 characters and a few body bullets.',
+            inp: 'Diff + the review result', out: '<code>CommitMessage</code>: subject, body' },
+  render: { kind: 'py',    x: 190, y: 618, w: 220, h: 52, t: 'Show result, exit', s: 'ui.py',
+            file: 'src/aireview/ui.py', what: 'Rich draws the risk panel, the fixes table and the commit message, then the process exits. Exit code 2 if <code>--fail-on-risk</code> is exceeded.',
+            inp: 'All three typed results', out: 'Pretty terminal output' }
+};
+const EDGES = [
+  { id: 'e1', from: 'term', to: 'git', d: 'M300 62 V100', label: null },
+  { id: 'e2', from: 'git', to: 'check', d: 'M300 152 V190', label: 'diff text', lx: 312, ly: 176 },
+  { id: 'e3', from: 'check', to: 'review', d: 'M300 242 V280', label: null },
+  { id: 'e4', from: 'review', to: 'router', d: 'M300 336 V380', label: 'ReviewResult', lx: 312, ly: 364, hot: true },
+  { id: 'eY', from: 'router', to: 'fix', d: 'M410 422 H440', label: 'yes', lx: 414, ly: 414, branch: 'yes' },
+  { id: 'eN', from: 'router', to: 'commit', d: 'M300 464 V510', label: 'no → skip', lx: 312, ly: 492, branch: 'no', dashed: true },
+  { id: 'eF', from: 'fix', to: 'commit', d: 'M505 452 V538 H410', label: 'FixPlan', lx: 512, ly: 505, branch: 'yes', hot: true },
+  { id: 'e5', from: 'commit', to: 'render', d: 'M300 566 V618', label: 'CommitMessage', lx: 312, ly: 598, hot: true }
+];
+const svg = document.getElementById('diagram');
+const NS = 'http://www.w3.org/2000/svg';
+function el(n, a = {}, t) { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (t) e.textContent = t; return e; }
+svg.appendChild(Object.assign(el('defs'), {
+  innerHTML: '<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker>'
+}));
+svg.style.color = 'var(--muted)';
+EDGES.forEach(e => {
+  const p = el('path', { d: e.d, class: 'edge' + (e.dashed ? ' dashed' : ''), id: e.id, 'marker-end': 'url(#ar)' });
+  svg.appendChild(p);
+  if (e.label) svg.appendChild(el('text', { x: e.lx, y: e.ly, class: 'elabel' + (e.hot ? ' hot' : ''), id: e.id + 'l' }, e.label));
+});
+Object.entries(NODES).forEach(([id, n]) => {
+  const g = el('g', { class: `node ${n.kind}`, id: 'n-' + id, tabindex: 0, role: 'button', 'aria-label': n.t });
+  if (n.kind === 'route') {
+    const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+    g.appendChild(el('polygon', { points: `${cx},${n.y} ${n.x + n.w},${cy} ${cx},${n.y + n.h} ${n.x},${cy}` }));
+  } else g.appendChild(el('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: 12 }));
+  g.appendChild(el('text', { x: n.x + n.w / 2, y: n.y + n.h / 2 - 1 }, n.t));
+  g.appendChild(el('text', { x: n.x + n.w / 2, y: n.y + n.h / 2 + 16, class: 'sub' }, n.s));
+  g.onclick = () => select(id);
+  g.onkeydown = ev => { if (ev.key === 'Enter') select(id); };
+  svg.appendChild(g);
+});
+
+const detail = document.getElementById('detail');
+function select(id) {
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('sel'));
+  document.getElementById('n-' + id).classList.add('sel');
+  const n = NODES[id];
+  const pill = { py: ['py', 'plain Python'], llm: ['llm', 'LLM call'], route: ['route', 'decision in code'] }[n.kind];
+  detail.innerHTML = `<span class="pill ${pill[0]}">${pill[1]}</span>
+    <h2 style="margin-top:8px">${n.t.replace(/^\$ /, '')}</h2>
+    <div class="file">${n.file}</div>
+    <p style="font-size:17px;margin:0">${n.what}</p>
+    <dl class="kv">
+      <dt>Input</dt><dd>${n.inp}</dd>
+      <dt>Output</dt><dd>${n.out}</dd>
+      ${n.prompt ? `<dt>Prompt</dt><dd><code>${n.prompt}</code></dd>` : ''}
+      ${n.schema ? `<dt>Schema</dt><dd><code>${n.schema}</code> in <code>schema.py</code></dd>` : ''}
+    </dl>`;
+}
+select('term');
+
+/* play the run */
+let timer = null;
+const serious = document.getElementById('serious');
+function clearState() {
+  clearTimeout(timer); timer = null;
+  document.querySelectorAll('.active,.dim').forEach(e => e.classList.remove('active', 'dim'));
+  document.getElementById('play').textContent = '▶ Play the run';
+}
+function sequence() {
+  const yes = serious.checked;
+  return yes ? ['term', 'e1', 'git', 'e2', 'check', 'e3', 'review', 'e4', 'router', 'eY', 'fix', 'eF', 'commit', 'e5', 'render']
+             : ['term', 'e1', 'git', 'e2', 'check', 'e3', 'review', 'e4', 'router', 'eN', 'commit', 'e5', 'render'];
+}
+function play() {
+  clearState();
+  const seq = sequence(), yes = serious.checked;
+  const skipped = yes ? ['eN'] : ['eY', 'fix', 'eF'];
+  skipped.forEach(id => { const e = document.getElementById(id) || document.getElementById('n-' + id); if (e) e.classList.add('dim'); });
+  if (!yes) { document.getElementById('n-fix').classList.add('dim'); }
+  document.getElementById('play').textContent = '⏸ Playing…';
+  let i = 0;
+  (function tick() {
+    document.querySelectorAll('.active').forEach(e => e.classList.remove('active'));
+    if (i >= seq.length) { document.getElementById('play').textContent = '▶ Play again'; return; }
+    const id = seq[i++];
+    const node = document.getElementById('n-' + id), edge = document.getElementById(id);
+    (node || edge).classList.add('active');
+    if (node) select(id);
+    timer = setTimeout(tick, node ? 1500 : 450);
+  })();
+}
+document.getElementById('play').onclick = play;
+document.getElementById('reset').onclick = clearState;
+serious.onchange = clearState;
+
+/* keyboard */
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input')) return;
+  if (e.key === '1') showTab('pack');
+  else if (e.key === '2') showTab('flow');
+  else if (!document.getElementById('pack').hidden && e.key === 'ArrowRight') document.getElementById('next').click();
+  else if (!document.getElementById('pack').hidden && e.key === 'ArrowLeft') document.getElementById('prev').click();
+  else if (!document.getElementById('flow').hidden && e.key === ' ' && !e.target.matches('button')) { e.preventDefault(); play(); }
+});
+try { const t = localStorage.getItem('aireview-tab'); if (t && tabs[t]) showTab(t); } catch (e) {}
+</script>
+</body>
+</html>
