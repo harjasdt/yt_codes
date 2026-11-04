@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+  <style>
+    .box{fill:#161b22;stroke:#30363d;stroke-width:2}
+    .t{fill:#e6edf3;font-size:17px;font-weight:600;text-anchor:middle}
+    .s{fill:#8b949e;font-size:13px;text-anchor:middle}
+    .line{stroke:#30363d;stroke-width:3;stroke-dasharray:6 6;fill:none}
+    .dot{fill:#58a6ff}
+    .glow{animation:pulse 6s infinite}
+    .g1{animation-delay:0s}.g2{animation-delay:1.2s}.g3{animation-delay:2.4s}.g4{animation-delay:3.6s}.g5{animation-delay:4.8s}
+    @keyframes pulse{0%,16%{stroke:#58a6ff;stroke-width:4}20%,100%{stroke:#30363d;stroke-width:2}}
+  </style>
+  <rect width="900" height="220" fill="#0d1117" rx="14"/>
+  <path class="line" d="M130 110 H770"/>
+  <g>
+    <rect class="box glow g1" x="20" y="65" width="150" height="90" rx="12"/>
+    <text class="t" x="95" y="105">Your code</text><text class="s" x="95" y="130">src/ + pyproject</text>
+    <rect class="box glow g2" x="200" y="65" width="150" height="90" rx="12"/>
+    <text class="t" x="275" y="105">Build</text><text class="s" x="275" y="130">python -m build</text>
+    <rect class="box glow g3" x="380" y="65" width="150" height="90" rx="12"/>
+    <text class="t" x="455" y="105">dist/</text><text class="s" x="455" y="130">.whl + .tar.gz</text>
+    <rect class="box glow g4" x="560" y="65" width="150" height="90" rx="12"/>
+    <text class="t" x="635" y="105">PyPI</text><text class="s" x="635" y="130">twine upload</text>
+    <rect class="box glow g5" x="740" y="65" width="140" height="90" rx="12"/>
+    <text class="t" x="810" y="105">pip install</text><text class="s" x="810" y="130">anyone, anywhere</text>
+  </g>
+  <circle class="dot" r="8" cy="110">
+    <animate attributeName="cx" values="95;275;455;635;810" keyTimes="0;0.25;0.5;0.75;1" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <text class="s" x="450" y="195">a package travels left to right: source, then artifacts, then a shared index, then every machine</text>
+</svg>

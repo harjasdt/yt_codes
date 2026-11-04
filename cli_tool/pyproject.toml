@@ -3,10 +3,22 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "aireview"
+name = "aireview-cli"
 version = "0.1.0"
 description = "Local AI git diff reviewer powered by Ollama, Pydantic and Rich"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Harjas Singh" }]
+keywords = ["git", "code-review", "ollama", "llm", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Version Control :: Git",
+]
 requires-python = ">=3.10"
 dependencies = [
     "ollama>=0.4",
@@ -14,6 +26,11 @@ dependencies = [
     "rich>=13.7",
     "typer>=0.12",
 ]
+
+[project.urls]
+Homepage = "https://github.com/harjasdt/yt_codes/tree/main/cli_tool"
+Source = "https://github.com/harjasdt/yt_codes"
+Issues = "https://github.com/harjasdt/yt_codes/issues"
 
 [project.scripts]
 aireview = "aireview.cli:app"

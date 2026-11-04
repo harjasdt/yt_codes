@@ -3,10 +3,17 @@
 Local AI git diff reviewer. `git diff` -> Ollama (`llama3.1:8b`) -> Pydantic -> Rich.
 
 ## Install
+Requires [Ollama](https://ollama.com) running locally with the model pulled:
+```bash
+ollama pull llama3.1:8b
+pip install aireview-cli      # installs the `aireview` command
+```
+From source (development):
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
 ```
+New to packaging? Read [GUIDE.md](GUIDE.md) - what a package is, how this one is built, how it got to PyPI.
 
 ## Use (from any git repo)
 ```bash

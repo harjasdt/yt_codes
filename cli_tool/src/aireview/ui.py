@@ -1,4 +1,5 @@
 """Chapter 4: all terminal presentation lives here. Run once, animate, print, exit."""
+import shlex
 import time
 
 from rich.console import Console, Group
@@ -159,6 +160,12 @@ def show_result(chain: ChainResult, partial: bool = False) -> None:
     for line in chain.commit.body:
         message.append(f"\n- {line.lstrip('- ')}", style="white")
     console.print(Panel(message, title="Suggested commit message", border_style="green", padding=(1, 2)))
+
+    # one plain, unboxed line: copy-paste friendly (no panel borders, no hard line breaks)
+    body = "; ".join(line.strip().lstrip("- ").rstrip(".") for line in chain.commit.body if line.strip())
+    command = f"git commit -m {shlex.quote(chain.commit.subject)}" + (f" -m {shlex.quote(body)}" if body else "")
+    console.print(Text("Copy and run:", style="dim"))
+    console.print(command, soft_wrap=True, markup=False, highlight=False)
 
 
 def show_trace(trace: list[dict], out: Console = console, max_chars: int = 1500) -> None:

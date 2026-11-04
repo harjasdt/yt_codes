@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" font-family="ui-monospace,SFMono-Regular,Menlo,monospace">
+  <style>
+    .f{fill:#e6edf3;font-size:16px}
+    .c{fill:#8b949e;font-size:14px;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+    .row{opacity:0;animation:show 10s infinite}
+    .r1{animation-delay:0s}.r2{animation-delay:.7s}.r3{animation-delay:1.4s}.r4{animation-delay:2.1s}.r5{animation-delay:2.8s}.r6{animation-delay:3.5s}.r7{animation-delay:4.2s}
+    @keyframes show{0%{opacity:0;transform:translateX(-12px)}6%,90%{opacity:1;transform:none}100%{opacity:0}}
+  </style>
+  <rect width="900" height="300" fill="#0d1117" rx="14"/>
+  <g class="row r1"><text class="f" x="30" y="40">cli_tool/</text></g>
+  <g class="row r2"><text class="f" x="50" y="75">pyproject.toml</text><text class="c" x="330" y="75">the label on the box: name, version, deps, command</text></g>
+  <g class="row r3"><text class="f" x="50" y="110">README.md</text><text class="c" x="330" y="110">becomes the PyPI project page</text></g>
+  <g class="row r4"><text class="f" x="50" y="145">LICENSE</text><text class="c" x="330" y="145">what others may do with your code</text></g>
+  <g class="row r5"><text class="f" x="50" y="180">src/aireview/</text><text class="c" x="330" y="180">the importable package (what `import aireview` finds)</text></g>
+  <g class="row r6"><text class="f" x="90" y="215">__init__.py</text><text class="c" x="330" y="215">marks the folder as a package</text></g>
+  <g class="row r7"><text class="f" x="90" y="250">cli.py  chain.py  llm.py ...</text><text class="c" x="330" y="250">your actual code</text></g>
+</svg>

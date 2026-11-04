@@ -38,7 +38,7 @@
   header { padding: 28px 24px 0; max-width: 1180px; margin: 0 auto; }
   h1 { margin: 0; font-size: 30px; letter-spacing: -0.02em; }
   h1 span { color: var(--accent); }
-  .tag { color: var(--muted); margin: 4px 0 14px; font-size: 16px; }
+  .tag { color: var(--muted); margin: 4px 0 14px; font-size: 17px; max-width: 860px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
   .chip { font: 13px var(--mono); padding: 3px 10px; border: 1px solid var(--line); border-radius: 99px; background: var(--panel); }
   nav { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
@@ -56,6 +56,34 @@
   .btn:hover { border-color: var(--accent); }
   .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
   .btn:disabled { opacity: .4; cursor: default; }
+
+  /* ---------- Core ideas tab ---------- */
+  .thesis { font-size: 18px; max-width: 900px; margin: 0 0 18px; }
+  .thesis b { color: var(--accent); }
+  .idea[hidden] { display: none; }
+  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+  .idea h2 { margin: 0 0 6px; font-size: 26px; }
+  .idea .lead { font-size: 18px; margin: 0 0 12px; }
+  .idea h3 { margin: 18px 0 4px; font: 700 12px var(--sans); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+  .idea code { font: 14px var(--mono); background: var(--line); padding: 1px 6px; border-radius: 4px; }
+  .trap { background: var(--route-soft); border-left: 4px solid var(--route); padding: 10px 14px; border-radius: 6px; margin: 14px 0; font-size: 15px; }
+  .trap b { color: var(--route); }
+  .gap { margin-bottom: 14px; }
+  .bar { display: flex; height: 34px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg); }
+  .bar > div { display: flex; align-items: center; justify-content: center; font: 600 12px var(--sans); color: #fff; white-space: nowrap; overflow: hidden; transition: width .2s; }
+  .bar .b-diff { background: var(--accent); } .bar .b-res { background: var(--llm); } .bar .b-free { background: transparent; color: var(--muted); }
+  .slider { width: 100%; margin: 10px 0 6px; accent-color: var(--accent); }
+  .verdict { font-size: 15px; min-height: 48px; }
+  .verdict.over { color: var(--route); }
+  .hand { font: 13px var(--mono); color: var(--muted); }
+  .chain { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+  .chain .step { border: 1.5px solid var(--llm); background: var(--llm-soft); border-radius: 10px; padding: 10px 14px; }
+  .chain .step.gate { border-color: var(--route); background: var(--route-soft); }
+  .chain .step.plain { border-color: var(--py); background: var(--py-soft); }
+  .chain .step b { display: block; font-size: 15px; }
+  .chain .step span { font: 13px var(--mono); color: var(--muted); }
+  .chain .pass { text-align: center; font: 13px var(--mono); color: var(--accent); }
 
   /* ---------- Packaging tab ---------- */
   .stepper { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
@@ -128,18 +156,220 @@
 <body>
 <header>
   <h1><span>ai</span>review</h1>
-  <p class="tag">A local AI code reviewer you can install as a real command. No cloud, no agent, just Python around a model.</p>
+  <p class="tag">A code reviewer that lives in your terminal. You make some changes, type one command, and it reads your changes, finds problems, and even writes your commit message. It all runs on your own machine, with no cloud and no API key. And there's no fancy agent either: it's just Python calling a local model, step by step.</p>
   <div class="chips"><span class="chip">Python</span><span class="chip">Ollama · llama3.1:8b</span><span class="chip">Pydantic</span><span class="chip">Typer</span><span class="chip">Rich</span><span class="chip">hatchling</span></div>
   <nav role="tablist" aria-label="Sections">
-    <button role="tab" id="tab-pack" aria-selected="true" aria-controls="pack">1 · Packaging from scratch</button>
-    <button role="tab" id="tab-flow" aria-selected="false" aria-controls="flow">2 · How the app flows</button>
-    <span class="hint">keys: 1 / 2 tabs · ← → steps · space plays the flow</span>
+    <button role="tab" id="tab-core" aria-selected="true" aria-controls="core">1 · Core ideas</button>
+    <button role="tab" id="tab-pack" aria-selected="false" aria-controls="pack">2 · Packaging from scratch</button>
+    <button role="tab" id="tab-flow" aria-selected="false" aria-controls="flow">3 · How the app flows</button>
+    <span class="hint">keys: 1 / 2 / 3 tabs · ← → steps · space plays the flow</span>
   </nav>
 </header>
 
 <main>
+<!-- ===================== CORE IDEAS ===================== -->
+<section id="core" role="tabpanel" aria-labelledby="tab-core">
+  <p class="thesis">Three ideas carry the whole app. <b>Chaining</b> splits one big job into small LLM calls. The <b>context window</b> limits what each call is allowed to see. <b>Structured output</b> makes each reply safe to hand to the next step. Learn these and the code is just wiring.</p>
+  <div class="stepper" id="ideaTabs">
+    <button data-idea="struct" aria-current="step">Structured output</button>
+    <button data-idea="ctx">Context window</button>
+    <button data-idea="chain">LLM chaining</button>
+    <button data-idea="trace">Observability</button>
+    <button data-idea="fail">Fail loudly</button>
+  </div>
+
+  <!-- structured output -->
+  <div class="idea" id="idea-struct">
+    <div class="two">
+      <div class="card">
+        <h2>Structured output</h2>
+        <p class="lead">Don't parse the model's prose. Make it fill in a form.</p>
+        <h3>The problem</h3>
+        <p>A model answers in free text. Even "reply in JSON" can come back wrapped in chatter, with a missing key, or with <code>"severity": "kinda bad"</code>. Your code then breaks on a string it can't trust.</p>
+        <h3>The fix, in two layers</h3>
+        <ul class="pts">
+          <li><b>Constrain.</b> Pass the schema as <code>format=</code>. Ollama restricts what the model can emit to JSON that fits it.</li>
+          <li><b>Validate.</b> Pydantic checks the reply: types, allowed values, ranges, lengths. Fail once and we retry once, then raise a clear error.</li>
+          <li><b>Pin the randomness.</b> <code>temperature: 0</code> makes the model pick its most likely tokens, so the same diff gives (nearly) the same review. A reviewer you can't repeat is a reviewer you can't debug or compare across prompt edits.</li>
+        </ul>
+        <h3>Why it matters</h3>
+        <p>Everything after the call is ordinary Python on a real object: <code>review.risk_score</code>, <code>f.severity in SERIOUS</code>. No regex, no <code>json.loads</code> guesswork.</p>
+        <div class="trap"><b>Watch out:</b> structure guarantees shape, not truth. A perfectly valid <code>risk_score: 3</code> can still be a wrong judgement. Field <code>description</code>s are sent to the model too, so they are part of the prompt.</div>
+      </div>
+      <div>
+        <pre class="code"><span class="c"># schema.py: the contract</span>
+<span class="k">class</span> <span class="n">Finding</span>(BaseModel):
+    severity: Literal[<span class="s">"low"</span>, <span class="s">"medium"</span>, <span class="s">"high"</span>, <span class="s">"critical"</span>]
+    file: str
+    issue: str
+    suggestion: str
+
+<span class="k">class</span> <span class="n">ReviewResult</span>(BaseModel):
+    risk_score: int = Field(ge=<span class="s">1</span>, le=<span class="s">10</span>)
+    findings: list[Finding]
+    ...</pre>
+        <pre class="code"><span class="c"># llm.py: one call used by every step</span>
+response = client.chat(
+    model=model, messages=[...],
+    format=schema.model_json_schema(),   <span class="c"># 1. constrain</span>
+)
+<span class="k">return</span> schema.model_validate_json(      <span class="c"># 2. validate</span>
+    response.message.content)</pre>
+        <div class="term"><span class="c"># what the model sends back, then what the code gets</span>
+{"risk_score": 7, "findings": [{"severity": "high", ...}]}
+   <span class="p">↓ model_validate_json</span>
+ReviewResult(risk_score=<span class="ok">7</span>, findings=[Finding(...)])</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- context window -->
+  <div class="idea" id="idea-ctx" hidden>
+    <div class="two">
+      <div class="card">
+        <h2>The context window</h2>
+        <p class="lead">The model has a fixed amount of working memory. Prompt and reply share it.</p>
+        <h3>The problem</h3>
+        <p>A window is measured in tokens (about 2.5 to 3 characters of code each). Your system prompt, the diff <em>and</em> the model's answer all have to fit. Ollama's default window is small and it truncates <em>silently</em>, so the model reviews half a diff and sounds sure of itself.</p>
+        <h3>What this app does about it</h3>
+        <ul class="pts">
+          <li><b>Set it on purpose.</b> <code>num_ctx = 16,384</code> and <code>num_predict = 2,048</code> in <code>config.py</code>.</li>
+          <li><b>Budget it.</b> Reserve 4,096 tokens for prompt and reply. The diff gets the rest, worked out from <code>NUM_CTX</code> so the numbers can't drift apart.</li>
+          <li><b>Spend it well.</b> Drop lockfiles and binaries, put source files before docs, cap each file at 3,000 characters so one huge file can't hide the rest.</li>
+          <li><b>Narrow it per step.</b> The fix advisor only sees diffs of the files with serious findings.</li>
+          <li><b>Say what was cut.</b> Trimmed and dropped files are recorded, so the user knows when a review was partial.</li>
+        </ul>
+        <div class="trap"><b>Watch out:</b> a bigger window isn't free. It costs memory and time, and models pay less attention to the middle of long prompts. Sending less, better chosen, usually beats sending more.</div>
+      </div>
+      <div class="card">
+        <h2 style="font-size:20px">Try the budget</h2>
+        <p class="hand">NUM_CTX 16,384 tokens · 2.5 chars per token</p>
+        <div class="bar gap" aria-hidden="true"><div class="b-diff" id="bDiff"></div><div class="b-res" id="bRes"></div><div class="b-free" id="bFree"></div></div>
+        <label for="diffSize" class="hand">Size of your diff: <b id="diffLabel"></b> characters</label>
+        <input class="slider" id="diffSize" type="range" min="0" max="60000" step="500" value="20000">
+        <div class="verdict" id="verdict" aria-live="polite"></div>
+        <pre class="code"><span class="c"># config.py</span>
+NUM_CTX = <span class="s">16_384</span>
+RESERVED_TOKENS = <span class="s">4_096</span>
+MAX_DIFF_CHARS = int((NUM_CTX - RESERVED_TOKENS) * <span class="s">2.5</span>)  <span class="c"># 30,720</span>
+PER_FILE_CHARS = <span class="s">3_000</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- chaining -->
+  <div class="idea" id="idea-chain" hidden>
+    <div class="two">
+      <div class="card">
+        <h2>LLM chaining</h2>
+        <p class="lead">Several small calls beat one giant prompt.</p>
+        <h3>The problem</h3>
+        <p>Ask a small local model to review, plan fixes and write a commit message in one go and every part gets worse. The prompt is huge, the output schema is tangled, and when something's off you can't tell which part failed.</p>
+        <h3>The pattern</h3>
+        <ul class="pts">
+          <li><b>One job per call.</b> Each step has its own prompt file and its own schema.</li>
+          <li><b>Typed handoff.</b> Step 1's <code>ReviewResult</code> is the input to steps 2 and 3. Nothing is re-parsed in between.</li>
+          <li><b>Plain Python decides the route.</b> <code>if serious:</code> is a normal <code>if</code>, not an agent. It's cheap, predictable and easy to debug.</li>
+          <li><b>Each step sees only what it needs.</b> That keeps every context small (see the previous idea).</li>
+        </ul>
+        <div class="trap"><b>Watch out:</b> errors compound. A bad step 1 feeds a bad step 2, which is why every handoff is validated and <code>--trace</code> shows each prompt and reply.</div>
+      </div>
+      <div>
+        <div class="chain">
+          <div class="step plain"><b>git diff → text</b><span>git_inspector.py · no LLM</span></div>
+          <div class="pass">diff ↓</div>
+          <div class="step"><b>1 · Review</b><span>LLM call → ReviewResult</span></div>
+          <div class="pass">findings ↓</div>
+          <div class="step gate"><b>Any high or critical finding?</b><span>plain Python <code>if</code>, no model</span></div>
+          <div class="pass">yes: only those files' diffs ↓ &nbsp;·&nbsp; no: skip</div>
+          <div class="step"><b>2 · Fix advisor</b><span>LLM call → FixPlan</span></div>
+          <div class="pass">review (type, breaking) + diff ↓</div>
+          <div class="step"><b>3 · Commit writer</b><span>LLM call → CommitMessage</span></div>
+        </div>
+        <pre class="code" style="margin-top:14px"><span class="c"># chain.py</span>
+review = llm.review_diff(diff, model)
+serious = [f <span class="k">for</span> f <span class="k">in</span> review.findings <span class="k">if</span> f.severity <span class="k">in</span> SERIOUS]
+<span class="k">if</span> serious:
+    fixes = llm.advise_fixes(filter_diff(diff, ...), serious, model)
+commit = llm.write_commit_message(diff, review, model)</pre>
+      </div>
+    </div>
+  </div>
+  <!-- observability -->
+  <div class="idea" id="idea-trace" hidden>
+    <div class="two">
+      <div class="card">
+        <h2>Observability</h2>
+        <p class="lead">If you can't see the prompt, you can't fix the answer.</p>
+        <h3>The problem</h3>
+        <p>A chain has several model calls, and the final output hides what each one saw and said. When the commit message is wrong, was it the diff, the prompt, the review from step 1, or the model?</p>
+        <h3>What this app does</h3>
+        <ul class="pts">
+          <li><b>One place to record.</b> Every model call goes through <code>ask()</code>, so one line there logs all of them to <code>TRACE</code>.</li>
+          <li><b>Everything that shaped the reply.</b> System prompt, user prompt, options, schema name, raw reply.</li>
+          <li><b>Cost and health.</b> Prompt and output token counts, seconds, and <code>done_reason</code>.</li>
+          <li><b>Two ways to read it.</b> <code>--trace</code> prints it (long prompts cut for the screen), <code>--trace-file</code> saves the full JSON. The file is also written when a run fails.</li>
+        </ul>
+        <div class="trap"><b>Watch out:</b> the trace holds your code diff. Treat a saved trace file like source code before you share it.</div>
+      </div>
+      <div>
+        <pre class="code"><span class="c"># llm.py: appended once per model call</span>
+TRACE.append({
+    <span class="s">"step"</span>: step, <span class="s">"schema"</span>: schema.__name__,
+    <span class="s">"system_prompt"</span>: system, <span class="s">"user_prompt"</span>: user,
+    <span class="s">"raw_response"</span>: response.message.content,
+    <span class="s">"prompt_tokens"</span>: ..., <span class="s">"output_tokens"</span>: ...,
+    <span class="s">"done_reason"</span>: ...,   <span class="c"># "length" = hit the reply cap</span>
+    <span class="s">"seconds"</span>: ...,
+})</pre>
+        <div class="term"><span class="c"># when something looks wrong</span>
+<span class="p">$</span> aireview --trace
+<span class="p">$</span> aireview --trace-file run.json
+<span class="c"># then ask, in order:</span>
+<span class="c">#  1. did the step see the right input?  (user_prompt)</span>
+<span class="c">#  2. did it fit?                        (prompt_tokens vs num_ctx)</span>
+<span class="c">#  3. was the reply cut off?             (done_reason)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- fail loudly -->
+  <div class="idea" id="idea-fail" hidden>
+    <div class="two">
+      <div class="card">
+        <h2>Fail loudly, degrade honestly</h2>
+        <p class="lead">A confident answer built on partial input is the worst outcome.</p>
+        <h3>The problem</h3>
+        <p>Models always sound sure. If Ollama is down, the diff was cut, or the reply was truncated, a quiet fallback gives the user a review that looks complete and isn't.</p>
+        <h3>What this app does</h3>
+        <ul class="pts">
+          <li><b>Check early.</b> <code>check_model</code> confirms Ollama is running and the model is pulled before any work, with the exact command to fix it.</li>
+          <li><b>Clear errors.</b> Git and model problems become <code>GitError</code> / <code>LLMError</code> with a plain message. The CLI shows it on the failing row and exits 1, with no stack trace.</li>
+          <li><b>Bounded waits.</b> A 120 s request timeout and a reply cap (<code>num_predict</code>) stop a rambling model from hanging the tool.</li>
+          <li><b>Bad output is an error.</b> A cut-off or malformed reply fails validation, retries once, then raises instead of guessing.</li>
+          <li><b>Say what wasn't seen.</b> Trimmed and unreviewed files are listed. A clean result on a partial diff reads "no issues in the part the model saw", never a green tick.</li>
+          <li><b>Exit codes for scripts.</b> 1 = error, 2 = risk over <code>--fail-on-risk</code>. With <code>--json</code>, warnings go to stderr so stdout stays clean JSON.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="chain">
+          <div class="step plain"><b>Ollama down / model missing</b><span>check_model → LLMError → "try: ollama serve"</span></div>
+          <div class="step plain"><b>Not a repo / no changes</b><span>GitError → plain message, exit 1</span></div>
+          <div class="step gate"><b>Diff too big</b><span>trim and drop files, then list them in a warning</span></div>
+          <div class="step gate"><b>Reply invalid or cut off</b><span>validate → retry once → LLMError</span></div>
+          <div class="step"><b>Clean result on partial input</b><span>"no issues in the part the model saw"</span></div>
+        </div>
+        <pre class="code" style="margin-top:14px"><span class="c"># ui.py / cli.py</span>
+ui.show_result(result, partial=diff.partial)
+<span class="k">if</span> diff.partial:
+    ui.show_partial_warning(diff)   <span class="c"># trimmed + not reviewed</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===================== PACKAGING ===================== -->
-<section id="pack" role="tabpanel" aria-labelledby="tab-pack">
+<section id="pack" role="tabpanel" aria-labelledby="tab-pack" hidden>
   <div class="stepper" id="stepper"></div>
   <div class="stage">
     <div class="card" id="packText"></div>
@@ -175,7 +405,7 @@
 
 <script>
 /* ---------------- tabs ---------------- */
-const tabs = { pack: document.getElementById('tab-pack'), flow: document.getElementById('tab-flow') };
+const tabs = { core: document.getElementById('tab-core'), pack: document.getElementById('tab-pack'), flow: document.getElementById('tab-flow') };
 function showTab(id) {
   for (const k in tabs) {
     tabs[k].setAttribute('aria-selected', k === id);
@@ -183,8 +413,38 @@ function showTab(id) {
   }
   try { localStorage.setItem('aireview-tab', id); } catch (e) {}
 }
+tabs.core.onclick = () => showTab('core');
 tabs.pack.onclick = () => showTab('pack');
 tabs.flow.onclick = () => showTab('flow');
+
+/* ---------------- core ideas ---------------- */
+document.querySelectorAll('#ideaTabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#ideaTabs button').forEach(x => x.removeAttribute('aria-current'));
+  b.setAttribute('aria-current', 'step');
+  document.querySelectorAll('.idea').forEach(d => d.hidden = d.id !== 'idea-' + b.dataset.idea);
+});
+(function () {
+  const NUM_CTX = 16384, RESERVED = 4096, CPT = 2.5, BUDGET = Math.floor((NUM_CTX - RESERVED) * CPT);
+  const slider = document.getElementById('diffSize');
+  function draw() {
+    const chars = +slider.value, used = Math.min(chars, BUDGET), tokens = Math.round(used / CPT);
+    const pct = t => (t / NUM_CTX * 100) + '%';
+    const bd = document.getElementById('bDiff'), br = document.getElementById('bRes'), bf = document.getElementById('bFree');
+    bd.style.width = pct(tokens); bd.textContent = tokens > 900 ? 'diff ' + tokens.toLocaleString() : '';
+    br.style.width = pct(RESERVED); br.textContent = 'prompt + reply 4,096';
+    bf.style.width = pct(NUM_CTX - RESERVED - tokens); bf.textContent = NUM_CTX - RESERVED - tokens > 1500 ? 'free' : '';
+    document.getElementById('diffLabel').textContent = chars.toLocaleString();
+    const v = document.getElementById('verdict');
+    if (chars <= BUDGET) {
+      v.className = 'verdict';
+      v.textContent = `Fits. About ${tokens.toLocaleString()} tokens of diff, with ${(NUM_CTX - RESERVED - tokens).toLocaleString()} to spare.`;
+    } else {
+      v.className = 'verdict over';
+      v.textContent = `Over budget by ${(chars - BUDGET).toLocaleString()} characters. The lowest-priority files (docs first, source last) are dropped, big files are cut to 3,000 characters, and the review is flagged as partial.`;
+    }
+  }
+  slider.oninput = draw; draw();
+})();
 
 /* ---------------- packaging stepper ---------------- */
 const steps = [
@@ -475,8 +735,9 @@ serious.onchange = clearState;
 /* keyboard */
 document.addEventListener('keydown', e => {
   if (e.target.matches('input')) return;
-  if (e.key === '1') showTab('pack');
-  else if (e.key === '2') showTab('flow');
+  if (e.key === '1') showTab('core');
+  else if (e.key === '2') showTab('pack');
+  else if (e.key === '3') showTab('flow');
   else if (!document.getElementById('pack').hidden && e.key === 'ArrowRight') document.getElementById('next').click();
   else if (!document.getElementById('pack').hidden && e.key === 'ArrowLeft') document.getElementById('prev').click();
   else if (!document.getElementById('flow').hidden && e.key === ' ' && !e.target.matches('button')) { e.preventDefault(); play(); }
