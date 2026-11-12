@@ -1,2 +1,42 @@
 .env
 .venv
+
+import base64
+import requests
+
+url = "http://localhost:7860/sdapi/v1/txt2img"
+
+payload = {
+    "prompt": (
+        'Header Text: Massive, bold white text reading "AI MEMORY POISONING!"'
+        ' with a sub-header "AGENT HIJACKED". \n\nCentral Subject: A 3D vector'
+        " database cylinder split into three tiers (WORKING, EPISODIC,"
+        " SEMANTIC) set against a glowing digital brain wireframe. The"
+        " cylinder is cracked on the right side with red energy leaking out."
+        " \n\nThe Threat (Left): A gloved hand with a red-glowing syringe"
+        " shooting a stream of pixelated black data into the database core."
+        " \n\nStyle & Colors: High-contrast cyberpunk look. Dark matrix server"
+        " background using neon cyan/blue for technology and glowing"
+        " alarm-red for danger."
+    ),
+    "negative_prompt": "",
+    "width": 1024,
+    "height": 1024,
+    "steps": 4,  # Matches your active 4-step configuration
+    "guidance_scale": 1,  # Matches your active guidance scale
+}
+
+print("Sending request to Draw Things...")
+response = requests.post(url, json=payload)
+
+if response.status_code == 200:
+  r_json = response.json()
+  images = r_json.get("images", [])
+  for i, img_base64 in enumerate(images):
+    image_data = base64.b64decode(img_base64)
+    filename = f"output_{i}.png"
+    with open(filename, "wb") as f:
+      f.write(image_data)
+    print(f"Saved image to {filename}")
+else:
+  print(f"Error: {response.status_code} - {response.text}")

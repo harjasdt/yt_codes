@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "aireview-cli"
+name = "ari-by-harjas-aireview"
 version = "0.1.0"
 description = "Local AI git diff reviewer powered by Ollama, Pydantic and Rich"
 readme = "README.md"

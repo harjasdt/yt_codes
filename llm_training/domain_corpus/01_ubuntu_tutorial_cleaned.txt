@@ -1,0 +1,2231 @@
+2. How this documentation is
+organized
+This documentation uses the Diátaxis documentation structure2.
+• The Tutorial (page 7) takes you step-by-step through installing and setting up your first
+Ubuntu Server system.
+• How-to guides (page 75) assume basic familiarity with Ubuntu Server and walk you
+through specific tasks.
+• Reference (page 792) provides system requirements, a glossary, and other technical
+specifications.
+• Explanation (page 866) includes topic overviews, background and context, and detailed
+discussion of key concepts.
+2 https://diataxis.fr/
+6 of 1139
+
+3. Project and community
+Ubuntu Server is a member of the Ubuntu family. It’s an open source project that welcomes
+community projects, contributions, suggestions, fixes and constructive feedback.
+• Read our Code of Conduct 3
+• Get community support4
+• Join the Discourse forum 5
+• Chat to us on Matrix 6
+• Contribute to this documentation (page 1114)
+If you find any errors or have suggestions for improvements, please use the “Give feedback”
+button at the top of every page. This will take you to GitHub where you can share your com-
+ments or let us know about bugs with any page.
+Releases
+Download Ubuntu Server7
+Ubuntu Release Notes8
+PDF versions of this documentation
+Current PDF9 (for Ubuntu 20.04 L TS onward)
+Ubuntu 18.04 L TS PDF10 (and earlier)
+Commercial support
+Thinking about using Ubuntu Server for your next project? Get in touch!11
+3.1. Ubuntu Server tutorial
+This tutorial should be a good place to start learning about Ubuntu Server in general, how it
+works, and what it’s capable of.
+In our “Getting started” tutorial you will learn how to set up an Ubuntu Server; from installing
+using a bootable USB device, to navigating the Server installer menu.
+3 https://ubuntu.com/community/docs/ethos/code-of-conduct
+4 https://ubuntu.com/support/community-support
+5 https://discourse.ubuntu.com/c/project/server/17
+6 https://matrix.to/#/#server:ubuntu.com
+7 https://ubuntu.com/download/server
+8 https://documentation.ubuntu.com/release-notes/
+9 https://ubuntu.com/server/docs/_/downloads/en/latest/pdf/
+10 https://assets.ubuntu.com/v1/8f8ea0cf-18-04-serverguide.pdf
+11 https://ubuntu.com/server/contact-us?product=server
+7 of 1139
+
+3.1.1. Getting started
+• Basic installation (page 8)
+The Server installer
+The Ubuntu installer has its own documentation. For more guidance on installing Ubuntu
+Server with the installer, you can also see these guides in the Ubuntu installer documentation
+(note: these pages will redirect you).
+• Operating the Server installer 12
+• Screen-by-screen installer guide13
+• Configuring storage14
+• Troubleshooting the installer15
+3.1.2. Next steps
+Once your Ubuntu Server is up and running, you may be interested in this collection of related
+tutorials and topics that will help you learn more about how it works and what’s available to
+you. These tutorials can be viewed in any order.
+• Welcome to the terminal (page 12)
+• The command line in depth (page 32)
+• Managing software in Ubuntu Server (page 47)
+• Attach your Ubuntu Pro subscription (page 73)
+If you have a specific goal, and are already familiar with Ubuntu Server, take a look at our
+How-to guides (page 75). These have more in-depth detail and can be applied to a broader
+set of applications.
+Take a look at ourReference section (page 792) when you need to determine what commands
+are available, and how to interact with various tools.
+Finally, for a better understanding of how Ubuntu Server works and how it can be used and
+configured, our Explanation section (page 866) enables you to expand your knowledge of the
+operating system and additional software.
+Basicinstallation
+This chapter provides an overview of how to install Ubuntu Server Edition. You can also refer
+to this guide onhow to operate the installer16 for more information on using the installer, and
+to this screen-by-screen reference guide 17 for more information about each of the installer
+screens.
+12 https://canonical-subiquity.readthedocs-hosted.com/en/latest/tutorial/operate-server-installer.html
+13 https://canonical-subiquity.readthedocs-hosted.com/en/latest/tutorial/screen-by-screen.html
+14 https://canonical-subiquity.readthedocs-hosted.com/en/latest/howto/configure-storage.html
+15 https://canonical-subiquity.readthedocs-hosted.com/en/latest/howto/report-bugs.html
+16 https://canonical-subiquity.readthedocs-hosted.com/en/latest/tutorial/operate-server-installer.html
+17 https://canonical-subiquity.readthedocs-hosted.com/en/latest/tutorial/screen-by-screen.html
+8 of 1139
+
+Preparingtoinstall
+This section explains various aspects to consider before starting the installation.
+Systemrequirements
+Ubuntu Server Edition provides a common, minimalist base for a variety of server applica-
+tions, such as file/print services, web hosting, email hosting, etc. This version supports four
+64-bit architectures:
+• amd64 (Intel/AMD 64-bit)
+• arm64 (64-bit ARM)
+• ppc64el (POWER8 and POWER9)
+• s390x (IBM Z and LinuxONE)
+The recommended minimal system requirements for this tutorial are:
+• RAM: 2 GB or more
+• Disk: 5 GB or more
+If you are looking for more general system requirements, refer to this page (page 850).
+Performasystembackup
+Before installing Ubuntu Server Edition you should make sure all data on the system is backed
+up.
+If this is not the first time an operating system has been installed on your computer, it is likely
+you will need to re-partition your disk to make room for Ubuntu.
+Any time you partition your disk, you should be prepared to lose all data on the disk should
+you make a mistake or something goes wrong during partitioning. The programs used in
+installation are quite reliable, most have seen years of use, but they also perform destructive
+actions.
+DownloadtheserverISO
+You can obtain the amd64 server download from https://releases.ubuntu.com/. Select the
+version you wish to install and select the “server install image” download. Note that the
+server download includes the installer.
+There are platform specific how-to guides for installations on:
+• s390x LPAR (page 124)
+• z/VM (page 99)
+• ppc64el (page 92)
+9 of 1139
+
+CreateabootableUSB
+There are many ways to boot the installer but the simplest and most common way is tocreate
+a bootable USB stick 18 to boot from ( tutorials for other operating systems 19 are also avail-
+able).
+Boottheinstaller
+Plug the USB stick into the system to be installed and start it.
+Most computers will automatically boot from USB or DVD, though in some cases manufac-
+turers disable this feature to improve boot times. If you don’t see the boot message and the
+“Welcome” screen which should appear after it, you will need to set your computer to boot
+from the install media.
+There should be an on-screen message when the computer starts telling you what key to
+press for settings or a boot menu. Depending on the manufacturer, this could be Escape,
+F2, F10 or F12. Simply restart your computer and hold down this key until the boot menu
+appears, then select the drive with the Ubuntu install media.
+If you are still having problems, check out theUbuntu Community documentation on booting
+from CD/DVD20.
+After a few moments, the installer will start in its language selection screen.
+18 https://documentation.ubuntu.com/desktop/en/latest/how-to/create-a-bootable-usb-stick/
+19 https://ubuntu.com/search?q=%22create+a+bootable+USB+stick%22
+20 https://help.ubuntu.com/community/BootFromCD
+10 of 1139
+
+Usingtheinstaller
+The installer is designed to be easy to use and have sensible defaults so for a first install you
+can mostly just accept the defaults for the most straightforward install:
+• Choose your language
+• Update the installer (if offered)
+• Select your keyboard layout
+• Do not configure networking (the installer attempts to configure wired network inter-
+faces via DHCP, but you can continue without networking if this fails)
+• Do not configure a proxy or custom mirror unless you have to in your network
+• For storage, leave “use an entire disk” checked, and choose a disk to install to, then
+select “Done” on the configuration screen and confirm the install
+• Enter a username, hostname and password
+• On the SSH and snap screens, select “Done”
+• You will now see log messages as the install is completed
+• Select restart when this is complete, and log in using the username and password pro-
+vided
+11 of 1139
+
+If you need more details, however, the Ubuntu installer has its own documentation21, includ-
+ing a screen-by-screen guide22.
+Welcometotheterminal
+On Ubuntu Server, the terminal is the primary way of interacting with your system. It’s easier
+to use than you might think, and learning it gives you much more control over your system
+(including on your Ubuntu Desktop). In this tutorial, you will learn how to use the terminal
+to navigate your Ubuntu system, find and work with files, and where to find help if you get
+stuck.
+Setupthevirtualmachine
+To avoid making changes to your computer we will set up a virtual machine (VM), which pro-
+vides us with a safe environment to run the commands in. Multipass23 is great for quickly
+creating Ubuntu virtual machines, so we will use that. It is available on Windows, Mac and
+Linux, so you don’t need to be already running Ubuntu on your computer to follow this tuto-
+rial.
+Prerequisites
+• The Multipass VM needs 5 GB of disk space, and 1 GB of memory available.
+InstallMultipass
+OnUbuntu
+You can install Multipass directly from the Multipass page 24 in the online snap store (make
+sure to select the “latest/stable” version from the dropdown menu next to the install button).
+Onotheroperatingsystems
+If you’re on Windows, Mac, or another Linux operating system, Multipass can be installed
+using these instructions25.
+21 https://canonical-subiquity.readthedocs-hosted.com/en/latest/index.html
+22 https://canonical-subiquity.readthedocs-hosted.com/en/latest/tutorial/screen-by-screen.html
+23 https://documentation.ubuntu.com/multipass/latest/
+24 https://snapcraft.io/multipass
+25 https://documentation.ubuntu.com/multipass/stable/how-to-guides/install-multipass/
+12 of 1139
+
+Openaterminalwindow
+Now that Multipass is installed, we need a terminal window to run our commands in. How
+you open one depends on your operating system.
+OnUbuntu
+Press Ctrl + Alt + T together and a terminal window will open. You can also search for “Ter-
+minal” in your application launcher.
+OnWindows
+PowerShell is the most reliable option for working with Multipass on Windows.
+1. Press the Windows key.
+2. Type PowerShell.
+3. Right-click it and select Run as Administrator — this helps avoid permission issues
+when managing virtual machines.
+If you have Windows Terminal installed from the Microsoft Store, that works just as well and
+offers a nicer experience with tab support.
+To confirm everything is working, type multipass version and press Enter. If you see version
+numbers, you’re ready to continue.
+OnmacOS
+1. Press ￿ + Space to open Spotlight.
+2. Type Terminal and press Enter.
+If you use iTerm2, that works perfectly well too.
+To confirm everything is working, type multipass version and press Enter. If you see version
+numbers, you’re ready to continue.
+Createthevirtualmachine
+Once you have installed Multipass and opened your terminal, we can launch a new VM using
+the Ubuntu 26.04 L TS release (codename “resolute”), and let’s give our VM the name tuto-
+rial using the following command in our terminal window:
+$ multipass launch resolute --name tutorial
+It may take a little time, depending on the speed of your internet connection. Multipass
+downloads the most recent daily image and creates the VM for us.
+13 of 1139
+
+Note:
+An Ubuntu image is a collection of files we need to install and run Ubuntu. We don’t need
+to specify “server” or “desktop” anywhere in our command, because the image is the same
+for both. The only difference between Ubuntu Server and Ubuntu Desktop is the subset
+of software packages we use from the Ubuntu Archive.
+Once the above command has finished running, we can access the VM by running:
+$ multipass shell tutorial
+We will get a “Welcome to Ubuntu” message. Notice that when we run this command, the
+terminal username changes to ubuntu and the hostname changes to tutorial:
+ubuntu@tutorial:~ $
+This shows that we are inside the VM, and this is where we will run all our commands. Now
+that our setup is complete, let’s carry on with the tutorial!
+Understandingtheterminal
+In our new terminal window, we see a shell prompt (sometimes called a command prompt),
+which is constructed as your-username@your-hostname and followed by a dollar sign ( $). This
+is where we input commands to the computer.
+your-name@your-machine-name:~$ Input: The commands you type
+Output: The results after running the command
+The output – the results of running your commands – is shown separately, underneath the
+shell prompt.
+Tip:
+You can use your mouse to copy text into the terminal by holding the left mouse button
+and dragging your mouse to highlight the text you want to copy. Then, release the left
+button.
+Move your mouse pointer to the terminal window and press the middle mouse button (or
+click the right mouse button and select paste).
+The Command Line Interface (CLI) is the language we use in our terminal to interact with
+our system. The CLI gives you far more control over your system than the Graphical User
+Interface (GUI) that you may be more familiar with.
+In software documentation, you will often see instructions to “run” or “execute” a command
+(or a set of commands). What this means is: type the command into your terminal at theshell
+prompt and press Enter on your keyboard. We did this already when we ran the multipass
+launch command to create our VM.
+The command is sent to the shell, which interprets the command and sends it to the oper-
+ating system, which runs the command. It took a little time for the tutorial instance to be
+14 of 1139
+
+created, but eventually the shell showed output like this:
+user@computer:~$ multipass launch --name tutorial
+Launched: tutorial
+So we know that the VM called tutorial was created successfully!
+Theshell
+You may be wondering: “why we need a shell at all? Why can’t we just tell the operating
+system what to do using our Desktop environment?”
+This is a good question. The simple answer is that while you can use the Desktop’s Graphical
+User Interface (GUI) to interact with your computer, the shell is much more resource-efficient
+and faster, since it doesn’t need to handle computationally expensive graphics. Servers rarely
+even have a GUI installed for precisely this reason.
+Hardware
+Kernel
+GUIsShells
+Command-line
+tools applications
+GUI
+Drivers
+System calls
+User User
+For simple tasks, like renaming a single file, there’s little difference between using your GUI
+and the CLI to complete it. However, if you need to rename 1,000 files to include the date
+they were created in the name, this would be a tiresome and time-consuming task to do in
+the GUI – lots of clicking and typing. Using the CLI, you can pull in the date automatically, set
+the pattern you want the names to follow, and have all 1,000 files renamed instantly.
+15 of 1139
+
+The real power and efficiency of the shell can be felt when you need to do something many
+times. You can even automate routine or large/complex tasks with shell scripts and command
+chaining – more on that in the next tutorial, though!
+The virtual machine provided by Multipass has no Graphical User Interface (GUI). It abstracts
+away all the details of virtualization, which is quite complicated, so we don’t have to worry
+about them. This means we can just open a shell inside our Multipass VM instance, which we
+did when we ran the multipass shell tutorial command:
+After we ran the command, our terminal window shows us a welcome message like this:
+ubuntu@tutorial:~$ multipass shell tutorial
+Welcome to Ubuntu 26.04 LTS (GNU/Linux 7.0.0-15-generic x86_64)
+* Documentation: https://docs.ubuntu.com
+* Management: https://landscape.canonical.com
+* Support: https://ubuntu.com/pro
+System information as of Fri May 29 17:22:28 BST 2026
+System load: 0.17 Processes: 110
+Usage of /: 56.8% of 3.70GB Users logged in: 0
+Memory usage: 22% IPv4 address for ens3: 10.234.118.66
+Swap usage: 0%
+Expanded Security Maintenance for Applications is not enabled.
+26 updates can be applied immediately.
+10 of these updates are standard security updates.
+To see these additional updates run: apt list --upgradable
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+You’ve probably noticed that your shell prompt has changed, and now says
+ubuntu@tutorial:~$ – tutorial is the name of our virtual machine (the hostname), and
+ubuntu is the default username in a Multipass virtual machine. This is how we know we’re
+now playing in our virtual sandbox, and not in our physical computer.
+Otherwaystousecommands
+As we’ve now seen, CLI commands are the instructions that we give the computer by typing
+them into the terminal. In our documentation, commands are formatted like this .
+Sometimes, we might want to run a whole set of commands at once. For convenience, we
+can save them in a file called a shell script, in the order we want the shell to execute them.
+Then, we just need to tell the shell to run the script, and it executes the commands in the
+script by itself.
+As you become more familiar with the command line, you can also begin to define your own
+commands built from other commands. These are called aliases, and they can be very handy
+shortcuts for small sets of commands you want to run often.
+16 of 1139
+
+Navigatingthefilesystem
+The filesystem is the structure your operating system uses to organize all files and direc-
+tories on the computer. It’s like the folder structure you see on a desktop computer’s file
+manager, except we’ll be navigating it using text commands in the CLI.
+There are some CLI commands that are so useful, and that we’ll use so often, they’ll become
+baked into our memory. First, let’s try this one:
+ubuntu@tutorial:~$ ls
+Nothing happened, right?
+The ls command (“list show”) shows us a list of all the files in our current folder. This is a
+brand new virtual machine, though, and we haven’t created anything yet, so there’s nothing
+to show! Let’s fix that by creating a few files using the touch command:
+ubuntu@tutorial:~$ touch my-first-file.txt my-second-file.txt
+my-third-file.txt
+Now if we run ls again it should show them to us:
+ubuntu@tutorial:~$ ls
+my-first-file.txt my-second-file.txt my-third-file.txt
+We can also create folders to help keep all our files organized using the mkdir command:
+ubuntu@tutorial:~$ mkdir my-folder
+Let’s run ls again:
+ubuntu@tutorial:~$ ls
+my-first-file.txt my-folder my-second-file.txt my-third-file.txt
+There is our new folder!
+The mkdir command is short for “make directory”. A directory is exactly the same as a folder,
+but it abbreviates to the conveniently short dir so it’s used more often. We’ll use them in-
+terchangeably.
+Let’s now move the three files we created into my-folder, so we can keep our current folder
+nice and tidy. We can do this using the mv command.
+Since it doesn’t know which files to move, we must give some arguments to the move ( mv)
+command. Actually, we already did this with our touch and mkdir commands earlier:
+touch FILE(S)
+touch <file-name> # Create one file
+touch <file-name-1> <file-name-2> # Create more than one file
+mkdir FOLDER(S)
+(continues on next page)
+17 of 1139
+
+(continued from previous page)
+mkdir <folder-name> # To create one folder
+mkdir <folder-name-1> <folder-name-2> # To create more than one folder
+The mv command is similar, but takes more arguments:
+mv FILE(S) FOLDER
+mv <file-name> <folder-name> # Move specific file to this folder
+mv <file-name-1> <file-name-2> <folder-name> # Move all the named files to this folder
+You can move any number of files you want. The names of the files you want to move always
+come right after the mv command. The folder you want to move those files to is always at the
+end. That’s to say, these are positional arguments – the order of where they appear in the
+command is important.
+Note:
+It’s also worth highlighting the common convention command [foo] <bar> for arguments
+that you’ll see in most CLI documentation.
+• Square brackets ([ ] ): anything inside is optional, so the command will run without
+it. This is common for flags that change or extend the behaviour of a command, as
+we’ll see shortly.
+• Side angle brackets (< > ): this is a required placeholder, where you should substitute
+your own information.
+In both cases, you exclude the brackets when you run the command – the brackets exist
+to show you what’s required and what’s optional.
+If you have a lot of files to move, though, there’s a handy shortcut.
+ubuntu@tutorial:~$ mv *.txt my-folder
+The wildcard ( *) symbol tells the mv command to look for all files whose name matches the
+pattern. In this case, files with any name, but ending with the .txt file extension. Let’s check
+this did what we expected:
+ubuntu@tutorial:~$ ls
+my-folder
+Nice and tidy! But how do we know that the files have been moved, and not just deleted?
+Here, we can use the cd command (“change directory”), to move tomy-folder and take a peek
+inside:
+ubuntu@tutorial:~$ cd my-folder/
+ubuntu@tutorial:~/my-folder$ ls
+my-first-file.txt my-second-file.txt my-third-file.txt
+Did you notice how the shell prompt changed to ubuntu@tutorial:~/my-folder$ after we
+18 of 1139
+
+used the cd command? This is our biggest navigation help! The tilde ( ~) symbol signifies
+our home directory (located at /home/your_user_name, which was our starting point. All the
+directories and subdirectories we create can trace a path back to this home directory.
+Let’s illustrate how this works by moving around a bit more. Start by making a subdirectory:
+ubuntu@tutorial:~/my-folder$ mkdir second-level
+Another helpful feature of the command line is “tab completion”. If a command, directory,
+or file already exists, we can start typing it and then press the TAB key on the keyboard to
+complete it. Let’s navigate to the directory we just made by typing cd s , and then press TAB.
+The shell automatically fills in the rest!
+ubuntu@tutorial:~/my-folder$ cd second-level/
+And then let’s make another subdirectory, and change to it:
+ubuntu@tutorial:~/my-folder/second-level$ mkdir third-level
+ubuntu@tutorial:~/my-folder/second-level$ cd third-level
+We’re getting quite far into the subdirectory structure now. Let’s use the pwd command to
+double check exactly where we are:
+ubuntu@tutorial:~/my-folder/second-level/third-level$ pwd
+/home/ubuntu/my-folder/second-level/third-level
+This command shows us our “present working directory” (sometimes people refer to it as the
+“current working directory”), and shows us the path we took to get to where currently are!
+So, now we’re here, how do we get back again?
+You guessed it – with our cd command:
+ubuntu@tutorial:~/my-folder/second-level/third-level$ cd ..
+Using cd .. will take us back up one directory – in our case, from third-level back to the
+second-level. The .. dots represent one folder level, and we could go back any number of
+levels we like using forward slashes (/) as separators between the dots. For example, starting
+from third-level, using cd ../.. would take us back two levels, to my-folder, and cd ../..
+/.. takes us back three levels, to our home directory.
+If we know we want to go back to the home directory, though, we could could also use cd ~
+to skip back there directly.
+ubuntu@tutorial:~/my-folder/second-level$ cd ~
+ubuntu@tutorial:~$ pwd
+19 of 1139
+
+/home/ubuntu
+And now we’re back home again!
+To keep things tidy, let’s remove the directories we created using the rmdir (“remove direc-
+tory”) command:
+ubuntu@tutorial:~$ rmdir my-folder
+But wait! This returns an error message: rmdir: failed to remove 'my-folder/': Directory
+not empty . It turns out that rmdir is a safe option, because it willonly let you delete a directory
+if it is empty. This prevents you from accidentally deleting files you didn’t know were in the
+folder.
+One option we have is to go back to our second-level directory, and from there, run rmdir
+third-level. Then, change to the my-folder directory and delete the second-level directory
+using rmdir second-level . Then, finally, we can return home and run the rmdir my-folder
+command again, and it will work.
+A faster (but less safe) option, is to use rm (“remove”) instead.
+Since we’re in a sandbox, and we know there’s nothing in this entire tree of folders we want
+to save, we can go ahead. Here, we’re going to use the -r flag to recursively delete the my-
+folder dir, and all its subdirectories.
+ubuntu@tutorial:~$ rm -r my-folder
+Now if we run ls again, we’ll see nothing gets returned, because our home directory is empty
+once more!
+The rm command won’t let you delete a directory without the -r flag, but it also won’t stop
+you (or ask if you’re really, truly sure) when deleting a folder and all its contents – so you
+should be cautious when using this command on a real system, to ensure you’re really sure
+you’re not going to delete something by accident that you really want to keep.
+Workingwithfiles
+We’ve already seen how to create empty files. Let’s look at how to copy, move, and remove
+files.
+Since our directory is empty again, let’s create a new file to play with using the touch com-
+mand:
+ubuntu@tutorial:~$ touch file1.txt
+If we run ls, we’ll see it is there:
+ubuntu@tutorial:~$ ls
+file1.txt
+20 of 1139
+
+To copy a file, we use cp (“copy”), followed by the original file’s name, and then the new file’s
+name. This is another case of using positional arguments :
+ubuntu@tutorial:~$ cp file1.txt file2.txt
+Since we’re not renaming or otherwise touching file1.txt, we should now have two files:
+ubuntu@tutorial:~$ ls
+file1.txt file2.txt
+Before we can see how to move a file, we need to have somewhere to move the file to, so
+let’s quickly create a directory to test this out using mkdir new-folder .
+Now we can move file2.txt to our new-folder using the mv (“move”) command, which takes
+two arguments:
+mv <original-location/file-name> <new-location/file-name>
+In our case, that translates to:
+ubuntu@tutorial:~$ mv file2.txt new-folder/file2.txt
+Both of the arguments here can take a path, but if we’re in the same directory as the file is
+located in, we don’t need to specify it. This becomes really powerful when you have to handle
+a lot of files in subdirectories.
+ubuntu@tutorial:~$ ls
+file1.txt new-folder
+If we cd to our new-folder we can see our file has been moved with the same name. But –
+what if we don’t want to keep the same name? It turns out mv can help us with that too.
+ubuntu@tutorial:~/new-folder$ mv file2.txt file2-renamed.txt
+We can also combine both moving the file and renaming it into one command. This time,
+instead of moving the file down a level by specifying the name of a sub-directory, we can use
+../ to indicate we want to move the file up to the previous level:
+ubuntu@tutorial:~/new-folder$ mv file2-renamed.txt ../file2.txt
+We could achieve the same by specifying the name of the next directory up (instead of ..),
+but this shorthand is much more convenient! Then if we cd .. back to the home directory,
+and run ls again, we’ll see that our file has been moved back:
+ubuntu@tutorial:~$ ls
+file1.txt file2.txt new-folder
+21 of 1139
+
+So what if we want more copies of the same file, but in our new-folder? For that, we can use
+cp again, but give the directory as the destination:
+ubuntu@tutorial:~$ cp file1.txt new-folder/
+Double check with ls and cd that this has worked. You should now have file1.txt in both
+the home directory, and in new-folder.
+Note:
+Be aware that the terminal will not check for, or warn you about, collisions between
+names. If you tell it to rename a file where a file of that name already exists, it will gleefully
+overwrite the original!
+The cp command is not just for files. We can make backup copies of a whole directory (and
+all its contents) using the -a (or --archive) flag. This flag preserves all the file permissions:
+ubuntu@tutorial:~$ cp -a new-folder/ new-folder-backup/
+Take a look around your new-folder-backup directory to make sure it all matches the original,
+then cd .. back to the home directory.
+Let’s say we no longer want file.txt. We can use the rm command to remove it, the way we
+did before. This time, we don’t need the -r flag because we’re deleting a single file.
+ubuntu@tutorial:~$ rm file1.txt
+Warning:
+Remember, there is no recycle bin in the Linux terminal – once you rm a file, it is gone. On
+your real system, double-check what you are deleting before running this command.
+Understandingfileattributes
+In Linux, everything is represented as a file – including directories, devices, and network con-
+nections. When we use ls -l , the very first character of each line tells us what type of file it
+is.
+Let’s look at a few examples:
+ubuntu@tutorial:~$ ls -l
+-rw-rw-r-- 1 ubuntu ubuntu 0 Apr 21 17:46 file2.txt
+drwxrwxr-x 2 ubuntu ubuntu 4096 Apr 21 18:00 new-folder
+drwxrwxr-x 2 ubuntu ubuntu 4096 Apr 21 18:00 new-folder-backup
+The output looks quite complicated at first, so let’s break it down using the first row of the
+output.
+22 of 1139
+
+Column Whatitis Description
+-rw-rw-
+r--
+Permis-
+sions
+The type of file and who can read/write/execute it
+1 Links The number of distinct filesystem paths that refer to this file or di-
+rectory (called “hard links”)
+ubuntu Owner The username of the person who owns the file
+ubuntu Group The name of the group that has specific permissions
+0 Size The size of the file in bytes
+Apr 21
+17:46
+Times-
+tamp
+The date and time the file was last modified
+file2.
+txt
+Name The actual name of the file or directory
+Fields like the file name, size, and timestamp, are quite intuitive once you know that this
+is what the fields represent. Permissions, owner and group are a bit less intuitive, so let’s
+examine those in more detail.
+Users,groups,andpermissions
+Linux is a multi-user system – it is designed to be used by multiple people at once, and it
+carefully controls who can read, modify, or run any given file. Understanding users, groups,
+and permissions is essential for working safely on a Linux system.
+Every file on a Linux system has an owner (a user account) and a group associated with it.
+Permissions grant different types of access to owners and groups.
+The nine characters in the permissions field show the different levels of access granted for
+each file. They are split into three groups of three:
+- rwx r-x r-x
+| | | |
+│ │ │ └── Other (everyone else): read + execute
+│ │ └─────── Group: read + execute
+│ └──────────── Owner: read + write + execute
+└──────────────── File type: regular file
+Each group of three characters can contain:
+• r – Read: view the file’s contents
+• w – Write: modify or delete the file
+• x – Execute: run the file as a program (or, for directories, enter them with cd)
+• - – the permission is not granted
+In our own example, we can see this means that for file2.txt, the permissions are:
+23 of 1139
+
+- rw- rw- r--
+| | | |
+│ │ │ └── Other (everyone else): read only
+│ │ └─────── Group: read + write (no execute)
+│ └──────────── Owner: read + write (no execute)
+└──────────────── File type: regular file
+The first character on each line is the file type indicator, which tells us what type of file it is:
+Sym-
+bol
+Type Description
+- Regular file An ordinary file: documents, scripts, binaries, images, etc.
+d Directory A file that is a list of other files
+l Symbolic link (or
+symlink)
+A pointer (shortcut) to another file
+c Character device A device file for hardware that handles data one character at
+a time (e.g., a keyboard)
+b Block device A device file for hardware that handles buffered data in blocks
+(e.g., a hard disk)
+s Socket A file used for inter-process communication
+p Named pipe Allows processes to communicate without network socket se-
+mantics
+Changingfilepermissions
+We can change a file’s permissions using chmod (“change file mode”). There are two ways to
+use it.
+Symbolicnotation
+This method uses letters to specify who to change:
+• u – user (owner)
+• g – group
+• o – other
+And what to change:
+• + – add a permission
+• - – remove a permission
+Let’s test method out first by creating a script file:
+ubuntu@tutorial:~$ touch symbolic-test.sh
+24 of 1139
+
+ubuntu@tutorial:~$ ls -l symbolic-test.sh
+-rw-rw-r-- 1 ubuntu ubuntu 0 Apr 23 10:52 symbolic-test.sh
+And then let’s make it executable by us (the owner):
+ubuntu@tutorial:~$ chmod u+x symbolic-test.sh
+ubuntu@tutorial:~$ ls -l symbolic-test.sh
+-rwxrw-r-- 1 ubuntu ubuntu 0 Feb 12 2024 myscript.sh
+Note how the permissions for the owner have change from “read and write only” ( rw-) to
+“read, write and execute” (rwx).
+Numericnotation
+This method uses a three-digit number where each digit is calculated by adding: read (4) +
+write (2) + execute (1):
+ubuntu@tutorial:~$ touch numeric-test.sh
+ubuntu@tutorial:~$ ls -l numeric-test.sh
+-rw-rw-r-- 1 ubuntu ubuntu 0 Apr 23 15:58 numeric-test.sh
+Then let’s use the numeric notation to change the permissions:
+ubuntu@tutorial:~$ chmod 755 numeric-test.sh
+ubuntu@tutorial:~$ ls -l numeric-test.sh
+-rwxr-xr-x 1 ubuntu ubuntu 0 Apr 23 15:58 numeric-test.sh
+From this we can see that 755 means: the owner has read, write and execute (7) privileges,
+the group has read and execute (5), while all others have read and execute (5).
+Some common permission combinations:
+25 of 1139
+
+Num-
+ber
+Sym-
+bolic
+Meaning
+644 rw-
+r--
+r--
+Owner can read/write; others can only read. Suitable for most files.
+755 rwxr-
+xr-
+x
+Owner can do everything; others can read and execute. Suitable for scripts and
+directories.
+700 rwx-
+---
+--
+Only the owner has any access.
+600 rw-
+---
+---
+Owner can read/write; no one else has any access.
+777 rwxr-
+wxrwx
+Full access to everyone. This is a dangerous permission to grant , but may
+be useful for debugging permission-related problems or on temporary files.
+Please avoid using this one unless you really know what you’re doing, and if
+you do see it, you should probably change it to one of the less permissive com-
+binations.
+When we create a new file, it gets a default set of permissions. The umask (“user file-creation
+mode mask”) controls what those defaults are. We can check the current umask with:
+ubuntu@tutorial:~$ umask
+0002
+The umask works by subtracting permissions from the maximum ( 777 for directories, 666 for
+files). A umask of 022 results in files being created with permissions of 644 and directories
+with 755 by default.
+Temporaryadminprivilegeswithsudo
+Most day-to-day work on Ubuntu is done as a regular user, without administrative privileges.
+When we do need to run a command as an administrator, we prefix it with sudo (“superuser
+do”), which temporarily grants elevated privileges for that one command. For example, if
+we want to update the software on our computer, we would run these two commands in
+sequence:
+ubuntu@tutorial:~$ sudo apt update
+ubuntu@tutorial:~$ sudo apt upgrade
+When we run a sudo command, we are asked for our password to confirm it is us.
+26 of 1139
+
+The sudo group on Ubuntu is special: any user account added to it gains the ability to run
+commands with admin privileges. Groups are listed in /etc/group, and a user can belong to
+many groups at once. We can inspect who is in the sudo group with:
+ubuntu@tutorial:~$ grep sudo /etc/group
+sudo:x:27:ubuntu
+Each line of the /etc/group file follows this format:
+group_name:password:GID:user_list
+Where:
+• group_name is the human-readable name of the group (what you see when you run ls
+-l)
+• password is always shown as x in modern Linux systems - the actual (encrypted) group
+password is stored in the secure /etc/passwd file.
+• GID is the group ID, which is a unique numerical integer assigned to the group.
+• user_list is a comma-separated list of usernames that are members of the group.
+TheFilesystemHierarchyStandard
+Now that we know how to move around the filesystem, it’s worth understanding how it is or-
+ganised. Most Linux distributions, including Ubuntu, follow the Filesystem Hierarchy Stan-
+dard (FHS), which defines where different types of files and directories belong. This is main-
+tained by the Linux Foundation, and it means the structure of any conforming system is pre-
+dictable and consistent.
+All files and directories live under the root directory, represented by a single forward slash
+/. Even files stored on separate physical disks appear as part of this single tree.
+Let’s take a look at the top level:
+ubuntu@tutorial:~$ ls /
+bin dev home lib64 media opt root sbin srv tmp usr var
+boot etc lib mnt proc run snap sys
+Here is what the most important directories contain:
+27 of 1139
+
+Direc-
+tory
+Purpose
+/bin Essential command binaries (e.g., ls, cp, mv)
+/sbin System binaries (e.g. iptables, reboot)
+/boot Static files needed to boot the system, including the Linux kernel and boot-
+loader files
+/dev Device files (e.g. /dev/sda and /dev/null)
+/etc System configuration files (e.g. /etc/group and /etc/password)
+/home User home directories (optional, but standard)
+/lib Essential shared libraries (needed by the binaries in /bin and /sbin)
+/media Mount points for temporarily mounted removable media (like USBs or CDs)
+/mnt Mount points for manually mounted filesystems (kept separate to avoid clashes)
+/root The home directory for the root user specifically
+/srv Service data, for services provided by the system
+/tmp Temporary files (cleared on reboot)
+/usr Most user programs, libraries, and documentation
+/var Variable data: logs, caches, spool files
+This is not a complete list, by any means! If you’d like more information about the Standard
+and other directories contained within it, take a look at the official specification26.
+Exploringdeeper
+Let’s browse a few of these. The /etc directory contains configuration files for the system
+and its services. Some important files there include:
+• /etc/passwd – the user account database
+• /etc/shadow – encrypted passwords (readable only by root)
+• /etc/fstab – filesystems to be mounted automatically at startup
+• /etc/group – group account information
+The /var/log directory holds the system’s log files – a useful place to look when diagnosing
+problems:
+ubuntu@tutorial:~$ ls /var/log
+The tree command can be used to visualise directory structures in a tree-style listing. It’s not
+installed by default, so let’s install it:
+26 https://specifications.freedesktop.org/fhs/latest/
+28 of 1139
+
+ubuntu@tutorial:~$ sudo apt install tree -y
+The -L flag can be used to set the depth you want to view. To see the top level (or level 1) of
+the root filesystem (/):
+ubuntu@tutorial:~$ tree -L 1 /
+To go one level deeper, to level 2:
+ubuntu@tutorial:~$ tree -L 2 /
+What happens if you just run tree by itself, with no arguments?
+ubuntu@tutorial:~$ tree
+.
+├── file2.txt
+├── new-folder
+│ └── file1.txt
+├── new-folder-backup
+│ └── file1.txt
+├── numeric-test.sh
+└── symbolic.sh
+3 directories, 5 files
+This is a much more convenient way to see what files each directory contains.
+Anoteaboutflags
+So far we’ve been using short flags, with a single dash (-) followed by a single letter, like with
+ls -l .
+Most flags also have a long version, where you’ll see a double dash ( --) with a full word. If a
+flag has both a long and short version, they can be used interchangeably.
+It’s possible to combine flags together. For example, the -l and -a flags (“long list”, “all”)
+would be combined into ls -la gives us a long listing that also includes hidden files, or those
+whose names start with a . character:
+ubuntu@tutorial:~$ ls -la
+29 of 1139
+
+ubuntu@tutorial:~$ man man
+The Linux manual is divided into numbered sections – the number appears in the page title,
+e.g., LS(1). Section 1 means “executable programs and shell commands”. We can search
+within a man page by pressing / followed by a search term, then Enter.
+Manual pages are also rendered online and can be viewed in your browser 27.
+Quickhelpwith–help
+Most commands also accept a--help flag that prints a brief summary of the available options:
+ubuntu@tutorial:~$ ls --help
+This is often quicker than opening the full manual page when we just want to check a specific
+flag.
+Searchingforacommand
+If we know what we want to do but don’t know which command to use, man -k searches the
+man page descriptions for a keyword:
+ubuntu@tutorial:~$ man -k copy
+This lists every command whose description mentions “copy”, which can help us find the right
+tool for the job.
+Nextsteps
+This is the end of our introduction to the terminal! We have covered a lot of ground: launch-
+ing a virtual machine, navigating the filesystem, working with files and directories, under-
+standing file types and the filesystem hierarchy, managing permissions, and finding help. All
+the commands we covered here (as well as some extra ones) can be found in our reference
+Command-line cheat sheet (page 843).
+If you wish, you can continue to explore the file system on your virtual machine, or proceed
+straight to the next tutorial where you can use the same VM.
+However, if you’re done for now and want to exit the VM, just type “ exit”.
+ubuntu@tutorial:~$ exit
+This will take you out of the VM and back to your live machine. Then, you can run the following
+commands to delete the VM and remove it completely from your machine:
+ubuntu@tutorial:~$ multipass delete tutorial > multipass purge
+27 https://manpages.ubuntu.com/
+31 of 1139
+
+Nextsteps
+If you wish to continue learning, we recommend following the The command line in depth
+(page 32) tutorial next. This tutorial will teach you the more advanced ways to interact with
+the Command Line Interface; how data flows, how input and output can be used more effi-
+ciently, and how to use variables.
+Thecommandlineindepth
+In Welcome to the terminal (page 12), we learned how to navigate the filesystem, work with
+files and directories, and manage permissions on the command line. Now we’ll go deeper into
+how to handle data flowing between programs, how to redirect that data to files and other
+programs, and how shell variables and expansion make our commands even more powerful.
+If you are re-using a virtual machine from a different tutorial, skip directly toStandard streams
+(page 34).
+Setupthevirtualmachine
+To avoid making changes to your computer we will set up a virtual machine (VM), which pro-
+vides us with a safe environment to run the commands in. Multipass28 is great for quickly
+creating Ubuntu virtual machines, so we will use that. It is available on Windows, Mac and
+Linux, so you don’t need to be already running Ubuntu on your computer to follow this tuto-
+rial.
+Prerequisites
+• The Multipass VM needs 5 GB of disk space, and 1 GB of memory available.
+InstallMultipass
+OnUbuntu
+You can install Multipass directly from the Multipass page 29 in the online snap store (make
+sure to select the “latest/stable” version from the dropdown menu next to the install button).
+28 https://documentation.ubuntu.com/multipass/latest/
+29 https://snapcraft.io/multipass
+32 of 1139
+
+Onotheroperatingsystems
+If you’re on Windows, Mac, or another Linux operating system, Multipass can be installed
+using these instructions30.
+Openaterminalwindow
+Now that Multipass is installed, we need a terminal window to run our commands in. How
+you open one depends on your operating system.
+OnUbuntu
+Press Ctrl + Alt + T together and a terminal window will open. You can also search for “Ter-
+minal” in your application launcher.
+OnWindows
+PowerShell is the most reliable option for working with Multipass on Windows.
+1. Press the Windows key.
+2. Type PowerShell.
+3. Right-click it and select Run as Administrator — this helps avoid permission issues
+when managing virtual machines.
+If you have Windows Terminal installed from the Microsoft Store, that works just as well and
+offers a nicer experience with tab support.
+To confirm everything is working, type multipass version and press Enter. If you see version
+numbers, you’re ready to continue.
+OnmacOS
+1. Press ￿ + Space to open Spotlight.
+2. Type Terminal and press Enter.
+If you use iTerm2, that works perfectly well too.
+To confirm everything is working, type multipass version and press Enter. If you see version
+numbers, you’re ready to continue.
+30 https://documentation.ubuntu.com/multipass/stable/how-to-guides/install-multipass/
+33 of 1139
+
+Createthevirtualmachine
+Once you have installed Multipass and opened your terminal, we can launch a new VM using
+the Ubuntu 26.04 L TS release (codename “resolute”), and let’s give our VM the name tuto-
+rial using the following command in our terminal window:
+$ multipass launch resolute --name tutorial
+It may take a little time, depending on the speed of your internet connection. Multipass
+downloads the most recent daily image and creates the VM for us.
+Note:
+An Ubuntu image is a collection of files we need to install and run Ubuntu. We don’t need
+to specify “server” or “desktop” anywhere in our command, because the image is the same
+for both. The only difference between Ubuntu Server and Ubuntu Desktop is the subset
+of software packages we use from the Ubuntu Archive.
+Once the above command has finished running, we can access the VM by running:
+$ multipass shell tutorial
+We will get a “Welcome to Ubuntu” message. Notice that when we run this command, the
+terminal username changes to ubuntu and the hostname changes to tutorial:
+ubuntu@tutorial:~ $
+This shows that we are inside the VM, and this is where we will run all our commands. Now
+that our setup is complete, let’s carry on with the tutorial!
+Standardstreams
+Now that we can work with files, we’re ready to understand something fundamental about
+how programs work in the terminal: standard streams.
+Every program that runs has three open communication channels by default:
+• Standard input (stdin) – the channel through which the program receives input. By
+default, this is your keyboard.
+• Standard output (stdout) – the channel through which the program sends its results.
+By default, this is your terminal screen.
+• Standard error (stderr) – the channel through which the program sends error mes-
+sages. This also appears on your terminal screen by default, but it is a separate channel
+from stdout.
+34 of 1139
+
+Each stream has a numerical identifier called a file descriptor:
+• 0 – stdin
+• 1 – stdout
+• 2 – stderr
+You may be wondering: “why three separate channels? Why not just one?”.
+The answer is that separating normal output from error output gives us much more flexibility.
+We can save the output of a command to a file while still seeing errors on screen – or silence
+errors entirely while saving results. We’ll see exactly how in the next sections.
+Redirectingoutput
+Normally, a command’s output goes straight to our terminal screen. We can tell the shell to
+send it somewhere else instead – like a file.
+To redirect output to a file, we use the > operator followed by a filename. Let’s redirect the
+output of ls to a file called file-list.txt:
+ubuntu@tutorial:~$ ls -la > file-list.txt
+No output appears on screen – it has all gone into a new file called file-list.txt instead.
+Viewingfilecontents
+Now that file-list.txt exists and has some content in it, let’s look at the commands we can
+use to see what the file contains. There are a few to choose from, and which one is most
+convenient depends on how much of the file we want to see.
+To print the full contents of a file to the screen, we can use cat (“concatenate”):
+35 of 1139
+
+Warning:
+One thing to be careful about: we know that file-list.txt is empty because didn’t exist
+before, but if file-list.txt had already contained something, > would have overwritten
+it completely. To add things to the end of an existing file rather than replacing it, we use
+>> (append mode):
+Let’s make our file a bit longer by using >> to add extra contents:
+ubuntu@tutorial:~$ ls -l /tmp >> file-list.txt
+Now file-list.txt contains the original home directory listing followed by the /tmp listing.
+We can check on this by using cat file-list.txt again.
+Sometimes we want a command to run silently, i.e. with its output discarded entirely. We
+can redirect stdout to /dev/null, a special file that throws away everything written to it:
+ubuntu@tutorial:~$ ping -c 2 localhost > /dev/null
+We can also redirect stderr (file descriptor 2) independently from stdout. This is useful for
+capturing errors to a log file while still seeing normal output on screen:
+ubuntu@tutorial:~$ ls /nonexistent 2> errors.txt
+Checking on this file shows us the error that would otherwise have been printed to the screen:
+ubuntu@tutorial:~$ cat errors.txt
+ls: cannot access '/nonexistent': No such file or directory
+We can also merge stderr into stdout using2>&1, which means “send file descriptor 2 to wher-
+ever file descriptor 1 is currently going”:
+ubuntu@tutorial:~$ ls /nonexistent >> output.txt 2>&1
+By doing this, both normal output and error messages will now appear in output.txt.
+Redirectinginput
+We can go the other direction too! Instead of a command reading from the keyboard, we can
+feed it input from a file using the < operator.
+Let’s use wc (“word count”), which counts lines, words, and characters in its input. Without
+redirection, we would type text and press Ctrl + D to signal the end of input. Instead, we can
+feed it a file directly:
+ubuntu@tutorial:~$ wc -l < /etc/passwd
+33
+37 of 1139
+
+Once again, you might see a different value here, depending on whether this is a new VM or
+you’re reusing the one from the previous tutorial.
+The -l flag tells wc to count lines only. When we use <, the file name does not appear in the
+output – wc sees the file’s contents as if they had been typed at the keyboard.
+Here-documents
+There is a related form called a here-document, written as <<. It lets us type multi-line input
+directly in the terminal, ending when we type a delimiter we choose ourselves (often EOF is
+used as this marker – short for “end of file”). Let’s test this by sending a greeting into a new
+file called greeting.txt:
+ubuntu@tutorial:~$ cat > greeting.txt << EOF > Hello from the terminal! >
+This text is going into a file. > EOF
+The shell reads everything we type until it sees EOF on a line by itself, then passes it all as
+input to the command on the left. Let’s confirm the file was created correctly:
+ubuntu@tutorial:~$ cat greeting.txt
+Hello from the terminal!
+This text is going into a file.
+Pipes
+Pipes are one of the most powerful ideas in the Unix philosophy: the output of one command
+becomes the input of the next. We connect them with the | operator (the “pipe” character).
+For example, ls -la /usr/bin produces many lines of output – more than can fit on screen,
+and you can only see the end of the output. Scrolling back up is often very inconvenient, if
+you can even do it at all (some terminals can’t!). To make it more convenient, we can pipe the
+output to less so we can page through it with the space key:
+ubuntu@tutorial:~$ ls -la /usr/bin | less
+Press Q to quit less when you are done.
+We can also pipe to grep to filter the output, keeping only lines that match a pattern. Let’s
+find all currently set environment variables whose names contain the word LANG:
+ubuntu@tutorial:~$ env | grep LANG
+LANG=C.UTF-8
+Pipes can be chained together to build a pipeline – each command passes its output along
+to the next. For example, to see the 3 most recently modified files in /usr/bin, we can sort
+by modification time and then cut the output down with head:
+38 of 1139
+
+ubuntu@tutorial:~$ ls -lt /usr/bin | head -n 3
+total 121540
+-rwxr-xr-x 1 root root 174328 Apr 30 13:32 kmod
+lrwxrwxrwx 1 root root 4 Apr 30 13:32 lsmod -> kmod
+Each command in the pipeline only ever sees the output of the command immediately before
+it – the shell connects them all behind the scenes.
+Chainingcommands
+Pipes pass data from one command to another and run all of their commands in parallel.
+This allows commands to begin working on long streams of data while their source is still
+producing more. However, there are scenarios where you might want a serial process, in
+which case you would use command chaining instead. Chaining is different: it controls the
+order in which commands run, and whether the next command runs at all.
+The simplest way to chain commands is to separate them with a semicolon (;). The shell runs
+each command in turn, regardless of whether the previous one succeeded, with the output
+of each command shown on separate lines:
+ubuntu@tutorial:~$ ls; pwd; whoami
+errors.txt file-list.txt greeting.txt output.txt
+/home/ubuntu
+ubuntu
+Note:
+On Linux, processes declare whether they have “succeeded” or not with an exit code. An
+exit code (or “exit status”) is a number from 0–255 that a process gives to its parent upon
+completion. “Success” is defined by exiting with code 0, with all other values indicating
+different types of failures. These might be specific to a particular program, but the generic
+failure status will usually be exit code 1. You can use exit n to immediately exit with code
+n.
+Often we want the second command to run only if the first one succeeded. We use && for
+this:
+ubuntu@tutorial:~$ cd /tmp && ls
+snap-private-tmp systemd-private-[...]
+If cd /tmp had failed (which can happen in a script when the directory does not exist), ls
+would not run at all.
+The opposite of && is ||, which runs the second command only if the first one failed:
+39 of 1139
+
+ubuntu@tutorial:~/tmp$ cd /nonexistent || echo "Could not change directory"
+-bash: cd: /nonexistent: No such file or directory
+Could not change directory
+We can combine && and || to produce a simple success-or-failure message:
+ubuntu@tutorial:~/tmp$ ping -c1 localhost && echo "Host is up" || echo "Host
+is unreachable"
+PING localhost (::1) 56 data bytes
+[...]
+Host is up
+A few other operators are useful to know. Try each of these out, both with and without the
+operators, to see how they change the behaviour for yourself:
+Background execution; &
+Runs a command in the background. The shell prompt returns immediately, and the
+command continues running. Let’s compare the difference in runningsleep 10 and then
+sleep 10 & . The sleep command doesn’t actually do anything, it just makes the system
+wait for the specified number of seconds. So, in this example our prompt disappears for
+10 seconds and you can’t interact with the terminal during that time. If we background
+it, using sleep 10 & , our command prompt returns immediately and we can continue to
+use the terminal.
+When we use the ampersand ( &) to background the process, it returns something like:
+[1] 168658
+This number is the process ID (PID); a unique number identifying every process run-
+ning on your machine. When the background process has finished running, you’ll see a
+message returned that looks like this, so you know it’s done:
+[1]+ Done sleep 10
+Command grouping; {}
+Groups commands together so they share the same output redirection or run as a unit.
+E.g. to create a quick log file you could run:
+ubuntu@tutorial:/tmp$ { echo "System Report"; date; uptime; } >
+report.txt
+Subshell execution; ()
+Run commands in a subshell, where the commands are forgotten the moment they fin-
+ish running. This is useful for isolating side effects like a cd – the directory change does
+not affect the current shell.
+40 of 1139
+
+ubuntu@tutorial:/tmp$ (export NAME="Alice"; echo "Hello $NAME") > echo
+"Name is: $NAME"
+Line continuation; \
+Continue a long command on the next line, which helps a lot with command readability.
+You’ll see this often in documentation.
+Let’s return home before continuing:
+ubuntu@tutorial:/tmp$ cd ~
+Shellenvironmentvariables
+Before we look at shell expansion, we need to understand shell variables, because expan-
+sion builds heavily on them.
+Think of a variable as a labelled box: we give it a name, put a value inside, and later retrieve
+that value using the name of the box. The shell uses variables to store all kinds of information
+– including a great deal about the environment we’re working in.
+Built-invariables
+The shell already has a number of variables set up for us. To see every variable currently set
+in our environment, we can run:
+ubuntu@tutorial:~$ env
+We can print the value of any variable using echo with a $ in front of the variable name:
+ubuntu@tutorial:~$ echo $SHELL
+/bin/bash
+ubuntu@tutorial:~$ echo $USER
+ubuntu
+ubuntu@tutorial:~$ echo $HOME
+/home/ubuntu
+One particularly important variable is PATH. It tells the shell which directories to search when
+we type a command name:
+ubuntu@tutorial:~$ echo $PATH
+41 of 1139
+
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/
+games:/snap/bin
+Each directory is separated by a colon (:). When we type a command likels, the shell searches
+through each of these directories in order until it finds a program with that name. This is
+why we can run commands without typing their full path. If a command lives outside these
+directories, we have to give its full path explicitly.
+Settingandunsettingvariables
+We can create our own variables by assigning a name and a value. By convention, user-defined
+variable names are uppercase:
+ubuntu@tutorial:~$ GREETING="Hello, world!"
+ubuntu@tutorial:~$ echo $GREETING
+Hello, world!
+To remove a variable, we use unset:
+ubuntu@tutorial:~$ unset GREETING
+ubuntu@tutorial:~$ echo $GREETING
+This time we get no output, because the variable no longer exists.
+Exportingvariablestosubshells
+Variables we create in the shell are only available in the current shell session. If a new shell
+process is started (for example, when running a script), it will not have access to our variables
+unless we export them.
+Let’s demonstrate. First, we set a variable and try to access it from a subshell:
+ubuntu@tutorial:~$ MY_VAR="hello"
+ubuntu@tutorial:~$ bash -c 'echo $MY_VAR'
+Nothing is printed – the subshell has no knowledge of MY_VAR. Now let’s export it first:
+ubuntu@tutorial:~$ export MY_VAR="hello"
+ubuntu@tutorial:~$ bash -c 'echo $MY_VAR'
+42 of 1139
+
+hello
+export makes the variable part of the environment that is passed down to any child processes
+we start.
+Specialread-onlyvariables
+Some variables are set by the shell itself and can only be read, never assigned. Two of the
+most useful are:
+• $? – the exit status of the last command. 0 means success; any non-zero value means
+something went wrong.
+• $$ – the Process ID (PID) of the current shell.
+Let’s see $? in action. A successful command returns 0:
+ubuntu@tutorial:~$ ls /etc/passwd
+/etc/passwd
+ubuntu@tutorial:~$ echo $?
+0
+And a failing command returns a non-zero value:
+ubuntu@tutorial:~$ ls /nonexistent
+ls: cannot access '/nonexistent': No such file or directory
+ubuntu@tutorial:~$ echo $?
+2
+This is especially useful when we build scripts, where we can check whether the previous
+command succeeded before deciding what to do next.
+Shellexpansion
+When we press Enter on a command, the shell does not send our text directly to the program.
+First, it processes the command line and expands certain patterns into their final values.
+Understanding expansion explains a lot of seemingly “magic” shell behaviour.
+43 of 1139
+
+Tildeexpansion
+We have already used tilde expansion without thinking about it. When the shell sees ~ at the
+start of a word, it replaces it with the value of $HOME:
+ubuntu@tutorial:~$ echo ~
+/home/ubuntu
+ubuntu@tutorial:~$ echo ~/my-file.txt
+/home/ubuntu/my-file.txt
+Variableexpansion
+We have seen this already: $VARIABLE_NAME (or ${VARIABLE_NAME}) is replaced with the vari-
+able’s value before the command runs. The braces form is important when the variable name
+might be confused with the characters that follow it:
+ubuntu@tutorial:~$ DAY="Monday"
+ubuntu@tutorial:~$ echo "Today is ${DAY}!"
+Today is Monday!
+Without the braces, the shell would try to expand $DAY! as a single variable name and find
+nothing.
+It’s also important to note that this variable expansion applies everywhere in the line, even
+with the command name itself!:
+ubuntu@tutorial:~$ CMD="echo"
+ubuntu@tutorial:~$ $CMD "It's dynamic!"
+It's dynamic!
+This can be useful in, say, a script that runs one of two very similar commands with the same
+argument, so you don’t have to re-type everything twice in your conditional.
+44 of 1139
+
+Commandsubstitution
+Command substitution lets us use the output of a command as part of another command. We
+wrap the inner command in $(...):
+ubuntu@tutorial:~$ echo "Today is $(date)"
+Today is Fri Apr 24 10:00:00 BST 2026
+The shell runs date first, captures its output, and substitutes it into the outer command be-
+fore running it.
+Arithmeticexpansion
+For integer arithmetic, we use $((...)):
+ubuntu@tutorial:~$ echo $((5 + 3))
+8
+ubuntu@tutorial:~$ X=10
+ubuntu@tutorial:~$ echo $((X * 2))
+20
+The available Arithmetic operators are:
+• Addition (+)
+• Subtraction (-)
+• Multiplication (*)
+• Integer division (/)
+• Modulo/remainder (%)
+• Exponentiation (**)
+Braceexpansion
+Brace expansion generates a list of strings from a pattern. Unlike the other types of expan-
+sion, it does not involve variables or filenames – it is a purely text-based generation mecha-
+nism:
+ubuntu@tutorial:~$ echo sp{in,an,ar}
+spin span spar
+45 of 1139
+
+Ranges work too, using ..:
+ubuntu@tutorial:~$ echo {1..10}
+1 2 3 4 5 6 7 8 9 10
+Brace expansion is particularly useful for creating multiple files or directories in one com-
+mand. For example, to create a directory for each month of the year:
+ubuntu@tutorial:~$ mkdir {01..12}-reports
+ubuntu@tutorial:~$ ls
+01-reports 02-reports 03-reports 04-reports 05-reports 06-reports
+07-reports 08-reports 09-reports 10-reports 11-reports 12-reports
+We can even clean them up in one command, too:
+ubuntu@tutorial:~$ rm -r {01..12}-reports
+Wildcardexpansion
+Wildcard expansion (also called globbing) lets us match filenames by pattern. We touched
+on this in Welcome to the terminal (page 12) when we used mv *.txt my-folder to move all
+text files at once.
+The three main wildcards are:
+*
+Matches any sequence of characters (including none), so as we saw previously, *.txt
+matches all files ending in .txt.
+?
+Matches any single character. For example, file?.txt matches file1.txt and fileA.
+txt, but not file10.txt.
+[...]
+Matches any one of the characters inside the brackets. file[123].txt matches file1.
+txt, file2.txt, and file3.txt only.
+Character classes like [[:digit:]] and [[:alpha:]] can be used inside brackets to match
+whole categories of characters.
+Let’s see wildcards in action. To list every file in /usr/bin whose name starts with m:
+ubuntu@tutorial:~$ ls /usr/bin/m*
+/usr/bin/make /usr/bin/man /usr/bin/md5sum [...]
+Wildcards are expanded by the shell before the command runs, so the program receives the
+resulting list of matching filenames – it never sees the * character itself.
+46 of 1139
+
+Success!
+This is the end of our journey around the terminal, and some of the powerful things we can
+do with it, but it’s certainly not all there is to know!
+If you wish, you can continue to explore the file system on your virtual machine.
+Once you are finished and want to exit the VM, just type “ exit”.
+ubuntu@tutorial:~$ exit
+This will take you out of the VM and back to your live machine. Then, you can run the following
+commands to delete the VM and remove it completely from your machine:
+ubuntu@tutorial:~$ multipass delete tutorial
+ubuntu@tutorial:~$ multipass purge
+Nextsteps
+If you wish to continue learning, we recommend following the Managing your software
+(page 47) tutorial next. This tutorial will teach you all the different ways to handle installing,
+removing and customizing software on your Ubuntu machine, as well as how to safely keep
+it up-to-date.
+Managingyoursoftware
+If you are new to Ubuntu, you may be wondering what to do after installation. After all,
+Ubuntu is endlessly customizable according to your needs. There are two types of software
+found in Ubuntu: Debian packages (debs) and snaps – we will focus mainly on debs in this
+tutorial!
+To help you get the most from your Ubuntu experience, this tutorial will walk you through
+managing the software on your Ubuntu machine. This tutorial can be completed using either
+Ubuntu Server or Ubuntu Desktop.
+If you are re-using a virtual machine from a different tutorial, skip directly to Updating the
+system with APT (page 49).
+Setupthevirtualmachine
+To avoid making changes to your computer we will set up a virtual machine (VM), which pro-
+vides us with a safe environment to run the commands in. Multipass31 is great for quickly
+creating Ubuntu virtual machines, so we will use that. It is available on Windows, Mac and
+Linux, so you don’t need to be already running Ubuntu on your computer to follow this tuto-
+rial.
+31 https://documentation.ubuntu.com/multipass/latest/
+47 of 1139
+
+Prerequisites
+• The Multipass VM needs 5 GB of disk space, and 1 GB of memory available.
+InstallMultipass
+OnUbuntu
+You can install Multipass directly from the Multipass page 32 in the online snap store (make
+sure to select the “latest/stable” version from the dropdown menu next to the install button).
+Onotheroperatingsystems
+If you’re on Windows, Mac, or another Linux operating system, Multipass can be installed
+using these instructions33.
+Openaterminalwindow
+Now that Multipass is installed, we need a terminal window to run our commands in. How
+you open one depends on your operating system.
+OnUbuntu
+Press Ctrl + Alt + T together and a terminal window will open. You can also search for “Ter-
+minal” in your application launcher.
+OnWindows
+PowerShell is the most reliable option for working with Multipass on Windows.
+1. Press the Windows key.
+2. Type PowerShell.
+3. Right-click it and select Run as Administrator — this helps avoid permission issues
+when managing virtual machines.
+If you have Windows Terminal installed from the Microsoft Store, that works just as well and
+offers a nicer experience with tab support.
+To confirm everything is working, type multipass version and press Enter. If you see version
+numbers, you’re ready to continue.
+32 https://snapcraft.io/multipass
+33 https://documentation.ubuntu.com/multipass/stable/how-to-guides/install-multipass/
+48 of 1139
+
+OnmacOS
+1. Press ￿ + Space to open Spotlight.
+2. Type Terminal and press Enter.
+If you use iTerm2, that works perfectly well too.
+To confirm everything is working, type multipass version and press Enter. If you see version
+numbers, you’re ready to continue.
+Createthevirtualmachine
+Once you have installed Multipass and opened your terminal, we can launch a new VM using
+the Ubuntu 26.04 L TS release (codename “resolute”), and let’s give our VM the name tuto-
+rial using the following command in our terminal window:
+$ multipass launch resolute --name tutorial
+It may take a little time, depending on the speed of your internet connection. Multipass
+downloads the most recent daily image and creates the VM for us.
+Note:
+An Ubuntu image is a collection of files we need to install and run Ubuntu. We don’t need
+to specify “server” or “desktop” anywhere in our command, because the image is the same
+for both. The only difference between Ubuntu Server and Ubuntu Desktop is the subset
+of software packages we use from the Ubuntu Archive.
+Once the above command has finished running, we can access the VM by running:
+$ multipass shell tutorial
+We will get a “Welcome to Ubuntu” message. Notice that when we run this command, the
+terminal username changes to ubuntu and the hostname changes to tutorial:
+ubuntu@tutorial:~ $
+This shows that we are inside the VM, and this is where we will run all our commands. Now
+that our setup is complete, let’s carry on with the tutorial!
+UpdatingthesystemwithAPT
+The first thing we always want to do with a new system (whether a VM, container, bare metal,
+or cloud instance) is to make sure we have the latest versions of all the pre-installed software.
+Debian packages, commonly referred to as debs, are the standard software package format
+in Ubuntu. They can be identified by the .deb file extension.
+Every Linux distribution has their own preferred package manager for installing, updating
+and removing packages. In Ubuntu, the default package manager is Advanced Packaging
+49 of 1139
+
+Tool34 (or APT, for short).
+APT handles all of your system software (and other deb packages). It provides an interface to
+the Ubuntu Archiverepository, so it can access both thedatabase of all the packages available
+in Ubuntu, and the means to handle the packages themselves.
+There are two APT commands we need to update our system: update and upgrade, which we
+will always run in that order.
+aptupdate
+The apt update command is about the database. Any bug fixes in a package (or new versions
+since your last update) will be stored in the metadata about that package in the database
+(the package index).
+When we run the update command it updates the APT database on our machine, fetching the
+newest available metadata from the package index:
+$ sudo apt update
+Hit:1 http://archive.ubuntu.com/ubuntu resolute InRelease
+Hit:2 http://archive.ubuntu.com/ubuntu resolute-updates InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu resolute-backports InRelease
+Hit:4 http://security.ubuntu.com/ubuntu resolute-security InRelease
+19 packages can be upgraded. Run 'apt list --upgradable' to see them.
+As we can see, it checks (“hits”) the various archives ( pockets) that updates can come from
+for the 26.04 L TS release ( resolute, resolute-updates, resolute-backports, and resolute-
+security – remember these, as we’ll come back to them later). It has found some packages
+that can be upgraded to newer versions. If we want to see which packages those are, we can
+run the command hinted in the output:
+$ apt list --upgradable
+The specific packages included in this list change over time, so the exact packages shown will
+be different, but the output will be structured like this:
+bind9-dnsutils/resolute-updates,resolute-security 1:9.20.18-1ubuntu2.1 amd64
+[upgradable from: 1:9.20.18-1ubuntu2]
+bind9-host/resolute-updates,resolute-security 1:9.20.18-1ubuntu2.1 amd64 [upgradable
+from: 1:9.20.18-1ubuntu2]
+bind9-libs/resolute-updates,resolute-security 1:9.20.18-1ubuntu2.1 amd64 [upgradable
+from: 1:9.20.18-1ubuntu2]
+bpftool/resolute-updates 7.7.0+7.0.0-22.22 amd64 [upgradable from: 7.7.0+7.0.0-15.
+15]
+libgcrypt20/resolute-updates,resolute-security 1.12.0-2ubuntu0.1 amd64 [upgradable
+from: 1.12.0-2]
+[...]
+The output tells us:
+34 https://wiki.debian.org/AptCLI
+50 of 1139
+
+• the package name and where the update will come from (e.g. bind9-dnsutils package
+from resolute-updates and resolute-security),
+• the most up-to-date package version available (e.g. 1:9.20.18-1ubuntu2.1),
+• the hardware version the update is for (e.g. amd64), and
+• what package version is currently installed (e.g. 1:9.20.18-1ubuntu2)
+aptupgrade
+The apt upgrade command is about the packages on your system. It looks at the metadata
+in the package index we just updated, finds the packages with available upgrades, and lists
+them for us. Once we’ve checked the proposed upgrade and are happy to proceed, it will
+then install the newer versions for us.
+After we have updated the database (which we did by running apt update ) we can then up-
+grade the packages to their newest versions by running:
+$ sudo apt upgrade
+When we run this command, it will ask us to confirm if the summary of proposed changes
+that will be made to our system is what we want.
+Let’s type Y, then press Enter to confirm that yes, we do want that, and then the upgrade will
+proceed. This may take a few minutes.
+Tip:
+You can use the -y flag, which is a shorthand for --assume-yes. If we ran the command
+sudo apt upgrade -y it would proceed with the upgrade without asking us to confirm.
+Shorthand versions of flags are common – for most packages, you can check which flags
+are equivalent using the manual pages35 or using the man command, as we’ll see later.
+35 https://manpages.ubuntu.com/
+In the output, we’ll see where apt upgrade is fetching the upgrade from for each package.
+For example:
+Get:1 http://archive.ubuntu.com/ubuntu resolute-updates/main amd64 libgcrypt20 amd64
+1.12.0-2ubuntu0.1 [670 kB]
+APT combines the various elements; the package name ( libgcrypt20), version ( 1.12.0-
+2ubuntu0.1), source ( resolute-updates/main), etc into a single URL that it can use for the
+download. The package is then unpacked, and the upgrade applied to the system.
+51 of 1139
+
+Note:
+These commands only upgrade the packages for the release of Ubuntu that we are using
+(26.04 L TS). If we wanted to upgrade the entire system to the next release of Ubuntu (e.g.
+from 22.04 L TS to 24.04 L TS), we would use the do-release-upgrade command. See this
+guide on how to upgrade your release (page 443) for more information.
+It’s important to know that apt upgrade will only handle packages that can be straightfor-
+wardly upgraded. If the package has dependency issues (i.e., the version you have “depends”
+on other packages that also need to be added, upgraded or removed), you would need to use
+sudo apt dist-upgrade instead. The dist-upgrade command is able to resolve conflicts be-
+tween package versions, but it could end up removing some packages. So while apt upgrade
+is safe to use unattended (in a script, for example), you should only use dist-upgrade when
+you can review which packages may be removed.
+SearchingwithAPT
+Now we’re up-to-date, we can start exploring! As with any other database, we can search the
+list of available packages using APT in order to find software. Let’s say that we want to find
+a web server, for example. We can run the following command:
+$ apt search webserver
+This will return us a long list of all “ webserver” packages it can find. But some of the descrip-
+tions don’t actually contain the text “ webserver” – like in this section of the list:
+inotify-tools/resolute 4.25.9.0-1 amd64
+command-line programs providing a simple interface to inotify
+ipcalc/resolute 0.51-1build1 all
+parameter calculator for IPv4 addresses
+iwatch/resolute 0.2.2-12 all
+realtime filesystem monitoring program using inotify
+We can use apt show to inspect the description and summary details of any package, so let’s
+take a closer look at ipcalc from our list:
+$ apt show ipcalc
+The summary has been replaced with [...] for brevity, but we can see that the text
+“webserver” is in the long description of the “Description” field.
+52 of 1139
+
+Package: ipcalc
+Version: 0.51-1build1
+[...]
+APT-Sources: http://archive.ubuntu.com/ubuntu resolute/universe amd64 Packages
+Description: parameter calculator for IPv4 addresses
+ipcalc takes an IPv4 address and netmask and calculates the resulting
+broadcast, network, Cisco wildcard mask, and host range. By giving a
+second netmask, you can design sub- and supernetworks. It is also
+intended to be a teaching tool and presents the results as
+easy-to-understand binary values.
+.
+Originally, ipcalc was intended for use from the shell prompt, but a
+CGI wrapper is provided to enable colorful HTML display through a
+webserver.
+While we used apt in the apt show command, in many places you will see reference toapt-get
+and apt-cache instead of apt. Historically, the database part of APT was accessed using apt-
+cache (e.g. apt-cache show ipcalc ), and the packages part of APT used apt-get (e.g. apt-get
+install ipcalc ).
+APT has recently been streamlined, so although it uses apt-get and apt-cache “behind the
+scenes” (and these commands do still work), we don’t need to worry about remembering
+which command to use – we can use the more convenient apt directly. To find out more
+about these packages and how to use them (or indeed, any package in Ubuntu!) we can refer
+to the manual pages.
+Run man apt , man apt-get or man apt-cache in the terminal to access the manuals for these
+packages on the command line, or view the same content in the online manual pages36.
+Installingdebpackages
+For the examples for this section, we’re going to use the popular web server package,
+Apache237.
+APT gives us a lot of details about what will be included in the installation, and it’s always
+important to understand the implications of a command before we run it. We’ll be taking a
+close look at the details APT gives us, so we need to be careful in this section.
+When we run a command that asks us “ Do you want to continue? [Y/n] ”, make sure to type
+N for “no” and then press Enter unless instructed otherwise – this will let us see the output
+of the commands without making changes that then need to be undone.
+Installing deb packages using APT is done using the apt install command. We can install
+either a single package, or a list of packages at once, by including their names in a space-
+separated list after the install command, in this format:
+sudo apt install <package 1> <package 2> <package 3>
+36 https://manpages.ubuntu.com
+37 https://httpd.apache.org/
+53 of 1139
+
+About sudo
+We’ve seen the sudo prefix in a couple of commands already, and you may be wondering what
+that’s about. In Linux, system tasks (like installing software) need elevated administrator
+permissions. These permissions are often called “root access”, and a user with root access is
+called a “root user”.
+However, it can be dangerous to operate your machine as a root user – since root access gives
+you full system control the whole time, it allows you to change or delete important system
+files. It’s very easy to accidentally break your system in root mode!
+Instead, we use sudo (which is short for superuser do ). This command is a safety feature that
+grants regular users temporary (per command) admin privileges to make system changes. It’s
+still important for us to always understand what a command does before we run it, but using
+sudo means we purposefully limit any potential mistakes to a single command.
+Aboutdependencies
+As we hinted earlier, packages often come with dependencies – other packages that your
+package needs so it can function. Sometimes, a package might depend on a specific version
+of another package. If a package has dependencies, then installing a package via apt will also
+install any dependencies, which ensures the software can function properly.
+APT tells us how it will resolve any dependency conflicts or issues when we run the install
+command. Let’s try this for ourselves, but remember, we don’t want to proceed with the
+install yet, so let’s type N when it asks us if we want to continue:
+$ sudo apt install apache2
+The output should be similar to the below.
+Installing:
+apache2
+Installing dependencies:
+apache2-bin libapr1t64 libaprutil1t64
+apache2-data libaprutil1-dbd-sqlite3 liblua5.4-0
+apache2-utils libaprutil1-ldap ssl-cert
+Suggested packages:
+apache2-doc apache2-suexec-pristine | apache2-suexec-custom www-browser
+Summary:
+Upgrading: 0, Installing: 10, Removing: 0, Not Upgrading: 0
+Download size: 2116 kB
+Space needed: 8218 kB / 1328 MB available
+Continue? [Y/n]
+It tells us:
+• which packages we have but don’t need (not shown above because our Apache2 exam-
+ple has none),
+54 of 1139
+
+• additional packages that will be installed (these are our dependencies),
+• suggested packages, and
+• a summary of which new packages will be present on the system after the install is done
+(which in this case is apache2 itself, and all its dependencies).
+Let’s try and make sense of this output.
+Typesofdependencies
+The relationship between a package and any other packages follows the Debian policy on
+binary dependencies 38, which we’ll briefly look at here. The most common ones you might
+come across are: depends, recommends, and suggests (although there are others!), so we’ll take
+a look at these three.
+• depends: Absolutely required, the package won’t work without it. If we try to remove
+a package that is depended on by another, both will be removed!
+• recommends: Strongly dependent, but not absolutely necessary (which means the
+package will work better with it, but can still function without it)
+• suggests: Not needed, but may enhance the usefulness of the package in some way.
+We can see, using apt show , exactly which packages fall into each of these categories. Let’s
+use Apache2 as our example again:
+$ apt show apache2
+[...]
+Depends: apache2-bin (= 2.4.66-2ubuntu2.4), apache2-data (= 2.4.66-2ubuntu2.4),
+apache2-utils (= 2.4.66-2ubuntu2.4), media-types, procps, perl:any
+Recommends: ssl-cert
+Suggests: apache2-doc, apache2-suexec-pristine | apache2-suexec-custom, ufw, www-
+browser
+[...]
+We see that ssl-cert is a recommended package. In Ubuntu, the default configuration of apt
+install is set to install recommended packages alongside depends, so when we ran the apt
+install apache2 command, ssl-cert was included in the proposed packages to be installed
+(even though it’s only recommended, not strictly needed).
+[...]
+Installing dependencies:
+apache2-bin libapr1t64 libaprutil1t64
+apache2-data libaprutil1-dbd-sqlite3 liblua5.4-0
+apache2-utils libaprutil1-ldap ssl-cert
+[...]
+We can override this behavior by passing the --no-install-recommends flag to our command,
+like this:
+38 https://www.debian.org/doc/debian-policy/ch-relationships.html#binary-dependencies-depends-recommends-suggests-enhances-pre-depends
+55 of 1139
+
+$ sudo apt install apache2 --no-install-recommends
+Then the output becomes the following (type N at the prompt again to avoid installing for
+now):
+[...]
+Installing dependencies:
+apache2-bin apache2-utils libaprutil1-dbd-sqlite3 libaprutil1t64
+apache2-data libapr1t64 libaprutil1-ldap liblua5.4-0
+Suggested packages:
+apache2-doc apache2-suexec-pristine | apache2-suexec-custom www-browser
+Recommended packages:
+ssl-cert
+Summary:
+Upgrading: 0, Installing: 9, Removing: 0, Not Upgrading: 0
+Download size: 2098 kB
+Space needed: 8149 kB / 1328 MB available
+[...]
+Now, we see that ssl-cert is only mentioned as a recommended package, and is excluded
+from the list of packages to be installed.
+There is a second flag we could pass – the --install-suggests flag. This will not only install
+the strict dependencies and recommended packages, butalso the suggested packages. From
+our previous output, it doesn’t look like too much, right? It’s only four additional packages.
+But actually, if we run this command:
+$ sudo apt install apache2 --install-suggests
+[...]
+Installing dependencies:
+apache2-bin apache2-utils libaprutil1-ldap
+apache2-data chromium-browser libaprutil1t64
+apache2-doc libapr1t64 liblua5.4-0
+apache2-suexec-pristine libaprutil1-dbd-sqlite3 ssl-cert
+Summary:
+Upgrading: 0, Installing: 13, Removing: 0, Not Upgrading: 0
+Download size: 6078 kB
+Space needed: 34.1 MB / 1328 MB available
+By comparing the amount of space needed with “suggests” included, to the previous output,
+we can see that there’s a considerable increase! Sometimes, including suggested packages
+will cause the package to not be installed due to a lack of space on the system.
+This is because each of these suggested packages also comes with their own lists of depen-
+dencies, including suggested packages, all of which would also be installed. It’s perhaps clear
+to see why this is not the default setting!
+56 of 1139
+
+Whatifweremoveadependency?
+We’ll go into more detail about removing packages later, but for now, let’s see what happens
+if we remove a required dependency. First, we should (finally!) install the apache2 package.
+Let’s run the following command again, but this time when we are asked whether we want
+to continue, let’s press Y and then Enter to confirm, and APT will install the package:
+$ sudo apt install apache2
+One of the required dependencies is the apache2-data package. Let’s try to remove it using
+apt remove :
+$ sudo apt remove apache2-data
+Once again, apt won’t proceed without confirmation, so we get the following output – let’s
+take a look before we choose anything:
+[...]
+The following packages were automatically installed and are no longer required:
+apache2-bin libapr1t64 libaprutil1-ldap liblua5.4-0
+apache2-utils libaprutil1-dbd-sqlite3 libaprutil1t64 ssl-cert
+Use 'sudo apt autoremove' to remove them.
+REMOVING:
+apache2 apache2-data
+Summary:
+Upgrading: 0, Installing: 0, Removing: 2, Not Upgrading: 0
+Freed space: 1349 kB
+Continue? [Y/n]
+Let’s break this down a little bit, because there are some subtle differences here that we
+want to understand before we proceed.
+• “The following packages were automatically installed and are no longer required”
+These were other dependencies that apache2 needed, but none of them depend upon
+apache2-data, so even if we remove apache2 and apache2-data they would still be func-
+tional – they just aren’t used by any other installed packages…and so have no reason
+to be there anymore. They won’t be removed, APT is helpfully telling us so we’re aware
+of them.
+• “The following packages will be REMOVED”
+These are the packages that will be removed directly - we’ve told APT we want to re-
+move apache2-data, so we expect that to be included, but it will also remove apache2
+itself! This is because apache2-data is a required dependency, and apache2 won’t func-
+tion at all without it.
+Let’s now choose Y to confirm we want to remove this dependency.
+57 of 1139
+
+Warning:
+Removing dependencies can, at worst, cause a system to become unusable – you should
+always be careful when doing so. If you remove a dependency that is part of a chain, the
+removals will cascade up the chain as each dependency and the package that depends on
+it are removed. You can end up removing more than you originally anticipated!
+Auto-removedependencies
+So, we have removed the apache2 and apache2-data packages, but the other dependencies
+that were installed alongside apache2 are still there. The output of our remove command gave
+us the hint about how to deal with these redundant packages – the autoremove command:
+$ sudo apt autoremove
+When we run this command, apt once again gives us a summary of the operation we re-
+quested, but let’s choose N for now when it asks if we want to continue:
+[...]
+REMOVING:
+apache2-bin libapr1t64 libaprutil1-ldap liblua5.4-0
+apache2-utils libaprutil1-dbd-sqlite3 libaprutil1t64 ssl-cert
+Summary:
+Upgrading: 0, Installing: 0, Removing: 8, Not Upgrading: 0
+Freed space: 6869 kB
+Continue? [Y/n]
+You may be wondering why we don’t need to specify any packages when we call the autore-
+move command – after all, we’ve just been dealing with packages related to apache2. This is
+because apt will check all the packages on your system. It examines the dependency tree,
+and if the original reason for the package to be installed no longer exists (i.e., it isn’t needed
+by anything), it will be flagged for auto-removal.
+But!
+We might, in the future, uninstall Apache2 without uninstalling the redundant packages at
+the time. We might have found another use for ssl-cert, perhaps in a script that makes use
+of SSL certificates. So how can we keep the ssl-cert package, even though it’s flagged for
+auto-removal?
+We can solve this problem, and un-flag the ssl-cert package for removal, by manually in-
+stalling it:
+$ sudo apt install ssl-cert
+This sets ssl-cert to manually installed. We might well wonder “why didn’t APT didn’t ask
+us to confirm anything this time?”. In this case, it’s because ssl-cert is already present on
+the system so APT doesn’t need to install anything new.
+58 of 1139
+
+[...]
+ssl-cert is already the newest version (1.1.3ubuntu2).
+ssl-cert set to manually installed.
+Summary:
+Upgrading: 0, Installing: 0, Removing: 0, Not Upgrading: 0
+If the ssl-cert package is manually installed on our system, by us, then apt knows the pack-
+age is wanted, and we can see that it has been removed from the auto-remove list so our next
+autoremove will not uninstall it. Let’s test this, just to make sure!
+$ sudo apt autoremove
+This time we’ll select Y when prompted, and then we can run apt list ssl-cert to quickly
+see if our ssl-cert package is still on the system:
+$ apt list ssl-cert
+ssl-cert/resolute,now 1.1.3ubuntu2 all [installed]
+If you’re curious, you can also run apt list apache2 to see how the output differs for a
+package that was once installed and then removed!
+Anyway, we’re not quite finished with the Apache2 package, so let’s reinstall it:
+$ sudo apt install apache2
+And this time select Y to confirm when it asks.
+Customizeconfiguration
+In general, the default package configuration should just work well, and work “out of the box”
+when it’s installed. But it’s almost inevitable that, sooner or later, we’ll want to customize the
+package so that it better fits our own purposes.
+Before we try to customize the package, we should probably look at what files are included
+in it. We can check this using dpkg(1)39, which is the Debian package manager. Although
+APT is now more commonly used for basic package handling, dpkg retains some really helpful
+commands for examining files and finding out package information. It’s installed by default
+on Ubuntu systems so we can use it directly:
+$ dpkg --listfiles ssl-cert
+This gives us the following list of files and their directory structure (the end of the list is
+truncated for brevity):
+39 https://manpages.ubuntu.com/manpages/resolute/man1/dpkg.1.html
+59 of 1139
+
+/.
+/etc
+/etc/ssl
+/etc/ssl/certs
+/etc/ssl/private
+/usr
+/usr/lib
+/usr/lib/systemd
+[...]
+/usr/share/man
+/usr/share/man/man8
+/usr/share/man/man8/make-ssl-cert.8.gz
+/usr/share/ssl-cert
+/usr/share/ssl-cert/ssleay.cnf
+[...]
+If we find a file but we’re not sure what package it comes from, dpkg can help us there too!
+Let’s use the example of one of the configuration files from the previous output:/usr/share/
+ssl-cert/ssleay.cnf and do a search for it using dpkg:
+$ dpkg --search /usr/share/ssl-cert/ssleay.cnf
+ssl-cert: /usr/share/ssl-cert/ssleay.cnf
+Although this is an obvious case, because we already know the source of this file, the dpkg
+search function is really useful for tracking down the sources of files we don’t know about!
+Conffiles
+Most of a package’s configuration is handled through configuration files40 (often known as
+conffiles). Conffiles often contain things like file paths, logs and debugging configuration,
+kernel parameters (which can be changed to optimize system performance), access control,
+and other configuration settings. The actual parameters available will vary from one package
+to another.
+Package conffiles are different from all other files delivered in a package. A package may
+have any number of conffiles (including none!). Conffiles are explicitly marked by the package
+maintainer during development to protect local configuration from being overwritten during
+upgrades so that your changes are saved. This is not the case for any other types of files –
+changes you make to regular files in that package will be overwritten during an upgrade.
+40 https://www.debian.org/doc/debian-policy/ap-pkg-conffiles.html#automatic-handling-of-configuration-files-by-dpkg
+60 of 1139
+
+Howupgradesarehandled
+Since a conffile can be changed by us, we might end up with conflicts when the package main-
+tainer changes those same files. Therefore, it’s important to understand how such conflicts
+are handled.
+We can show the four possible upgrade scenarios using the following table. What happens
+during an upgrade depends on whether the conffile on our system has been changed by
+us (“changed/not changed by user”), and whether the version’s default content has been
+changed by the package maintainer (“changed/not changed by maintainer”):
+Theconffileis… notchangedbymaintainer changedbymaintainer
+…changed by user Keep user’s changes Ask user
+…not changed by user No changes to make Apply changes from update
+So we can see that if we do make changes to a conffile, APT will never overwrite our changes
+without asking us first.
+Identifyingconffiles
+Out of the list of files in a package, how do we know which ones are the conffiles?
+After all, they are not marked by any particular file extension, and although they are often
+found in the /etc/ directory, they don’t have to be there. As we saw before, the only thing
+conffiles have in common is that the package maintainer decided to mark them as such.
+But that’s our clue! So once more, dpkg can come to our rescue. The following command
+will show us ( --show) the subset of files in the apache2 package that have been marked as
+“Conffiles” ( -f='${Conffiles}\n' ) by the maintainer and shows each on a new line ( \n) in
+the output:
+$ dpkg-query --show -f= '${Conffiles}\n' apache2
+If you want to understand more about what this command does, you can refer to the manual
+page by typing man dpkg-query --show , and it will talk you through all the options.
+Unlike dpkg --listfiles , dpkg-query also gives us a string of letters and numbers. This string
+is known as the “MD5 checksum” or “MD5 hash”.
+/etc/apache2/apache2.conf 354c9e6d2b88a0a3e0548f853840674c
+/etc/apache2/conf-available/charset.conf e6fbb8adf631932851d6cc522c1e48d7
+/etc/apache2/conf-available/localized-error-pages.conf
+f542d267bfce7815f9453eb1476e5f73
+/etc/apache2/conf-available/other-vhosts-access-log.conf
+2cad303fc4221d6b0068a8b37597b9fb
+/etc/apache2/conf-available/security.conf 332668933023a463046fa90d9b057193
+[...]
+61 of 1139
+
+We can see the checksum of a specific file by running this command, which returns us the
+checksum followed by the file and its location:
+$ md5sum /etc/apache2/apache2.conf
+354c9e6d2b88a0a3e0548f853840674c /etc/apache2/apache2.conf
+You might well be wondering “why do we care about that?” since they match (in this example).
+The checksum is like a fingerprint - it’s unique for every version of a file, so any time the file is
+changed it will get a new checksum – which allows us to see if a file has been changed from
+the default.
+Verifyingchecksums
+Let’s set up a situation so we can poke a bit at this idea. We can start by making some changes
+to a conffile. In Apache2, the main conffile is /etc/apache2/apache2.conf, so let’s use that.
+In a situation where we are setting up a new web server, we might reasonably want to in-
+crease the LogLevel from “warn” to “debug” to get more debugging messages, so let’s run
+this command and use sed to make that change in the conffile:
+$ sudo sed -e 's/LogLevel warn/LogLevel debug/' -i /etc/apache2/apache2.conf
+We won’t be prompted to confirm if we want to make these changes – but we do need root
+access so we use sudo in our command. As we hinted in the section about sudo, the fact that
+we can make these changes without needing to confirm is why it can be so easy to break your
+system when you’re operating as root! Try running the command without the sudo, and you
+will get a “permission denied” error.
+Next, we’ll restart our Apache2 server so that we can activate our configuration changes:
+$ sudo systemctl restart apache2
+Now if we run the md5sum command again, we can see the hash changed:
+ubuntu@tutorial:~$ md5sum /etc/apache2/apache2.conf
+1109a77001754a836fb4a1378f740702 /etc/apache2/apache2.conf
+This works great if we know that there’s a file we changed, but what about if someone else
+tampered with a file, and we don’t know which one? In that case, we can use:
+$ dpkg --verify apache2
+This will verify the checksums of the files on our system against those held in the package
+index for apache2, and return a rather strange looking result if (or when) it finds a mismatch:
+??5?????? c /etc/apache2/apache2.conf
+Which is exactly what we were expecting to see, since we know we changed this file.
+62 of 1139
+
+But what if something else was messed with…something that shouldn’t be, and something
+not changed by us? Let’s make a “silly” change to a different file to test this – in this case,
+changing all instances of the word “warning” to “silly” in a random package file:
+$ sudo sed -e 's/warning/silly/' -i /usr/sbin/a2enmod
+And then run the verification again with:
+$ dpkg --verify apache2
+??5?????? c /etc/apache2/apache2.conf
+??5?????? /usr/sbin/a2enmod
+Note:
+You might have noticed there’s a “c” next to the top line but not the bottom – the “c” shows
+the file is a conffile.
+dpkg can tell that the file has been changed, but won’t tell us what the change was. However,
+since the file in question is not a conffile, we know that the change won’t be preserved if we
+upgrade the package. This means that we can overwrite the changes and restore the default
+package content by “reinstalling” Apache2. We can use the --reinstall flag to force apt to
+re-unpack all of the default content:
+$ sudo apt install --reinstall apache2
+If we then verify once more…
+$ dpkg --verify apache2
+??5?????? c /etc/apache2/apache2.conf
+…so we can see that our change to the conffile has been preserved because the checksums
+are different, but the a2enmod file isn’t listed anymore because it has been restored to the
+default. Phew!
+Note:
+We can use sudo apt install <package> to upgrade an installed package, but this will
+only upgrade to the latest version. In our case, we were already on the latest version of
+Apache2, so we needed to force APT to re-unpack the content to overwrite our “silly”
+changes.
+63 of 1139
+
+Removingpackages
+Since we have just reinstalled the Apache2 package, we know it is in good shape. But what if
+we decide we’re done with it and just want to remove it? Then we can run:
+$ sudo apt remove apache2
+The following packages were automatically installed and are no longer required:
+apache2-bin apache2-utils libaprutil1-dbd-sqlite3 libaprutil1t64
+apache2-data libapr1t64 libaprutil1-ldap liblua5.4-0
+Use 'sudo apt autoremove' to remove them.
+REMOVING:
+apache2
+Summary:
+Upgrading: 0, Installing: 0, Removing: 1, Not Upgrading: 0
+Freed space: 471 kB
+Continue? [Y/n]
+Let’s type Y to proceed.
+As before, we see that the dependencies will still be there even when apache2 has been re-
+moved. Let’s check with dpkg…
+$ dpkg --listfiles apache2
+…and see what else might be left behind…
+/etc
+/etc/apache2
+/etc/apache2/apache2.conf
+/etc/apache2/conf-available
+/etc/apache2/conf-available/charset.conf
+/etc/apache2/conf-available/localized-error-pages.conf
+/etc/apache2/conf-available/other-vhosts-access-log.conf
+/etc/apache2/conf-available/security.conf
+/etc/apache2/conf-available/serve-cgi-bin.conf
+/etc/apache2/conf-enabled
+/etc/apache2/envvars
+/etc/apache2/magic
+/etc/apache2/mods-available
+/etc/apache2/mods-available/access_compat.load
+/etc/apache2/mods-available/actions.conf
+[...]
+This looks suspiciously like the list of conffiles we saw earlier, right?
+64 of 1139
+
+Alsoremovingconfiguration
+As it turns out, removing a package doesn’t automatically remove the conffiles. But – this is
+intentional, for our convenience.
+By leaving the conffiles in place, if we decide to reinstallapache2 again in the future, we don’t
+need to spend time setting up all our configuration again.
+Let’s see the difference in installing apache2 after it has been installed (and removed) com-
+pared to the first time we installed it:
+$ sudo apt install apache2
+Notice that it did not ask us to confirm if we wanted to proceed this time. Why not? As we
+saw earlier, the “Y/n” confirmation is shown when there are dependencies, and we know that
+Apache2 has dependencies.
+…Ah! But this time, we didn’t run autoremove when we uninstalled Apache2, so the depen-
+dencies are still installed on our system. This means that when we ask apt to install apache2
+now, there is nothing missing and we are getting exactly what we are asking for.
+Since the dependencies and conffiles are still there, we can use our former config immedi-
+ately. It even retains the changes we made before, which we can verify by looking at the
+checksum again:
+$ md5sum /etc/apache2/apache2.conf
+Removingandpurging
+What if we decide that we don’t want the changed conffiles? Perhaps we want to go back to
+the default installation, or we know we won’t want to use the package ever again – how can
+we ensure that all the conffiles are removed at the same time as we remove the package?
+In that case, we can use the --purge option of the remove command:
+$ sudo apt remove --purge apache2
+[...]
+The following packages were automatically installed and are no longer required:
+apache2-bin apache2-utils libaprutil1-dbd-sqlite3 libaprutil1t64
+apache2-data libapr1t64 libaprutil1-ldap liblua5.4-0
+Use 'sudo apt autoremove' to remove them.
+REMOVING:
+apache2*
+Summary:
+Upgrading: 0, Installing: 0, Removing: 1, Not Upgrading: 0
+Space needed: 0 B / 1318 MB available
+Continue? [Y/n]
+If we look very carefully, we see a little asterisk (*) in the output.
+65 of 1139
+
+REMOVING:
+apache2*
+This tiny indicator tells us that the package will be removed AND purged. However, it still
+does not remove the dependencies (or the conffiles of those dependencies).
+Let’s type Y again to confirm we want to proceed. Then, once the removal is complete, we
+can check the list once more:
+$ dpkg --listfiles apache2
+dpkg-query: package 'apache2' is not installed
+Use dpkg --contents (= dpkg-deb --contents) to list archive files contents.
+This time the output is very different!
+Note:
+We could also use the dpkg-query --show -f='${Conffiles}\n' apache2 command from
+earlier, and dpkg-query will find no packages matching apache2.
+There are other ways to change package files. If you would like to read more, check out our
+guide to changing package files (page 982).
+Whatelseisonoursystem?
+As we saw earlier, we can search the APT package database for keywords using apt search
+<keyword> to find software we might want to install. We can also see all the packages we
+already have using apt list , although it can be easier to navigate and more informative if we
+use dpkg -l instead – then we can use the up and down arrow keys on our keyboard to scroll
+(or press Q to return to our terminal prompt).
+For every package, we can see what versions of it exist in the database:
+$ apt policy apache2
+This will return a summary of all the versions that exist on our particular Ubuntu release,
+ordered by “most recent” first:
+apache2:
+Installed: (none)
+Candidate: 2.4.66-2ubuntu2.1
+Version table:
+2.4.66-2ubuntu2.1 500
+500 http://archive.ubuntu.com/ubuntu resolute-updates/main amd64 Packages
+500 http://security.ubuntu.com/ubuntu resolute-security/main amd64 Packages
+2.4.66-2ubuntu2 500
+500 http://archive.ubuntu.com/ubuntu resolute/main amd64 Packages
+66 of 1139
+
+We know that Apache2 isn’t installed right now, because we removed and purged it, which is
+why the installed version shows as “none”:
+Installed: (none)
+If we were to install the default package, we would get this one:
+Candidate: 2.4.66-2ubuntu2.1
+Under each version we are also shown the source. The newest version ( 2.4.66-2ubuntu2.1)
+comes from resolute-updates (main) and resolute-security (main). The original version (2.
+4.66-2ubuntu2) comes from resolute (main). This tells us that this was the version released
+with the with 26.04 L TS (Resolute Raccoon).
+Installingolderpackageversions
+We can install specific older versions if we want to, for example, to satisfy dependency re-
+quirements of another package. We can do that by specifying the package name and version:
+sudo apt install <package>= <version>
+However, this can be tricky and often leads to conflicts in dependency versions as APT always
+wants to install the most recent version. We can see an example of this if we run the following
+command:
+$ sudo apt install apache2=2.4.66-2ubuntu2
+APT warns us that the version of apache2 we want to install depends on earlier versions of
+the dependencies, but it helpfully tells us which dependency versions we need to successfully
+install the package we want.
+67 of 1139
+
+[...]
+Solving dependencies... Error!
+Some packages could not be installed. This may mean that you have
+requested an impossible situation or if you are using the unstable
+distribution that some required packages have not yet been created
+or been moved out of Incoming.
+The following information may help to resolve the situation:
+Unsatisfied dependencies:
+apache2 : Depends: apache2-bin (= 2.4.66-2ubuntu2) but 2.4.66-2ubuntu2.1 is to be
+installed
+Depends: apache2-data (= 2.4.66-2ubuntu2) but 2.4.66-2ubuntu2.1 is to be
+installed
+Depends: apache2-utils (= 2.4.66-2ubuntu2) but 2.4.66-2ubuntu2.1 is to be
+installed
+Error: Unable to satisfy dependencies. Reached two conflicting assignments:
+1. apache2:amd64=2.4.66-2ubuntu2 is selected for install
+2. apache2:amd64=2.4.66-2ubuntu2 Depends apache2-bin (= 2.4.66-2ubuntu2)
+but none of the choices are installable:
+- apache2-bin:amd64=2.4.66-2ubuntu2 is not selected for install
+So, all we need to do is first install the dependencies, and then run the install command again.
+Remember that we can install multiple packages at once by separating them with spaces. We
+can also break the command over multiple lines using backslashes (\) to make it easier to read,
+but it will still be run as a single command:
+$ sudo apt install apache2-bin=2.4.66-2ubuntu2 \ >
+apache2-data=2.4.66-2ubuntu2 \ > apache2-utils=2.4.66-2ubuntu2 \ >
+apache2=2.4.66-2ubuntu2
+APT will warn us that we are downgrading the package, but let us press Y to confirm (when
+prompted), and it will go ahead and downgrade us anyway. Let’s run the following command
+again to get confirmation that we’re running on an older version:
+$ apt policy apache2
+apache2:
+Installed: 2.4.66-2ubuntu2
+Candidate: 2.4.66-2ubuntu2.1
+Version table:
+2.4.66-2ubuntu2.1 500
+500 http://archive.ubuntu.com/ubuntu resolute-updates/main amd64 Packag>
+500 http://security.ubuntu.com/ubuntu resolute-security/main amd64 Pack>
+*** 2.4.66-2ubuntu2 500
+500 http://archive.ubuntu.com/ubuntu resolute/main amd64 Packages
+100 /var/lib/dpkg/status
+lines 1-10/10 (END)
+68 of 1139
+
+Wheredopackagescomefrom?
+You may be wondering by now “where exactly do all these packages come from?”. We’ve
+spotted a few sources very briefly throughout this tutorial, but haven’t paid direct attention
+to them yet. Let’s take a little time now to define what we mean by all these different sources
+that APT can pull packages from.
+The source behind APT is the Ubuntu Package Archive. This Archive splits into many layers,
+each with its own terminology. The different terminology is quite confusing at first, but we’ve
+seen a few of the terms already. So if we take a look, layer-by-layer, we’ll see not just what
+all the terms mean, but how they all fit together.
+Let’s have a quick overview with this diagram. The general flow is that the Archive splits
+into Ubuntu series. Each series is split up into pockets, and then each pocket contains four
+components. If we tried to show all of this on one diagram, it would be quite extensive, so
+let’s take a look through a single path.
+Series
+The series is a set of packages that are released with a specific version of Ubuntu – they’re
+usually referred to by their codename (e.g., mantic, noble and oracular in our diagram). Each
+version of Ubuntu may have multiple releases. For example, an L TS will have an initial release
+when it launches (e.g. 24.04 L TS), and then “subsequent point releases” (e.g. 24.04.1 L TS) –
+these are all part of the same series ( noble).
+In practice, people often use the term “Ubuntu release” and “Ubuntu series” interchangeably.
+Pockets
+Every Ubuntu series (noble, jammy, etc) is split into pockets, which are related to the software
+development/release lifecycle:
+• -release contains the packages as they are at release time.
+• -proposed contains package updates while they are being tested.
+• Once an update is released, they come from either -security or -updates depending on
+whether they are a security-related update or not.
+• And -backports, which contains packages that were not available at release time.
+This is why earlier, we saw that some updates came from resolute-updates or resolute-
+security. These refer to updates and security updates, respectively, from the resolute se-
+ries. Pockets are usually appended to the end of the series, and it’s quite common to see the
+hyphen (-) included when referring to pockets.
+Remember – the original version of the apache2 package we saw came from resolute. The
+-release pocket only includes the software that was part of the original L TS release, and so
+it takes the name of the Ubuntu series by default (i.e., the -release pocket is implied).
+69 of 1139
+
+Components
+Each pocket is split into four components, depending on whether the packages they contain
+are open source or closed source, and whether they are officially supported by Canonical or
+are maintained by the Ubuntu Community:
+Opensource Closedsource
+Officially supported main restricted
+Community supported universe multiverse
+• main contains the open-source packages that are officially supported by Canonical.
+These packages are either installed on every Ubuntu machine, or are very widely used
+for various types of systems and use-cases.
+• universe holds all other open-source packages in Ubuntu, which are typically main-
+tained by the Debian and Ubuntu communities, but may also include additional security
+coverage from Canonical under Ubuntu Pro41, which is available free for personal use
+on up to five machines.
+• restricted contains the packages that are officially supported by Canonical but are not
+available under a completely free license.
+• multiverse contains community-maintained proprietary software – these packages are
+completely unsupported by Canonical.
+If you would like more information about the Ubuntu release process, how packages are pro-
+duced, or to learn more about the sort of terminology you might come across, you may be
+interested in the Ubuntu Project documentation 42, which is a great resource containing all
+this information (and much more!).
+Installinga.debfile
+Although APT is the preferred way to install packages on your system, due to its ability to
+handle dependencies and keep software up-to-date, not every package is available in the
+APT repository – especially if they are so old they are no longer maintained, or conversely,
+are the newest version still in development!
+We can install .deb files that aren’t in the APT repository using dpkg – all we need is to down-
+load the .deb file, and we can run a command like this to install it:
+sudo dpkg -i <file-name.deb>
+But – APT is helpful here too. Even if we get a .deb file that isn’t from the Ubuntu Archive, we
+can still install it with APT so that if there are dependencies that can be resolved automati-
+cally from the Archive – they will be!
+41 https://ubuntu.com/pro
+42 https://documentation.ubuntu.com/project/
+70 of 1139
+
+sudo apt install ./file-name.deb
+If we ever do want to install a .deb file, APT is definitely the most convenient way to do it.
+We may still need to handle some dependencies manually, but now we have the knowledge
+to be able to do that.
+Luckily, most of the packages you will ever need are likely to be found through APT. If it’s not,
+it’s worth checking if the software is available as a snap instead.
+Snaps
+Snaps are a newer, self-contained software format that were developed to be a more
+portable and easy-to-use alternative to debs. They come with all their dependencies pre-
+bundled so that there is no need for a package management tool to track dependencies, and
+they run inside sandboxed environments that limit their interactions with the rest of the sys-
+tem.
+Instead of versions as we have them in debs, snaps use the concept of channels43 to define
+which release of a snap is installed.
+By default, snaps are kept automatically up-to-date, so we don’t need to remember to update
+and upgrade them. There are times on a live system, such as a server in a production envi-
+ronment, where we might not want to have updates automatically applied. In those cases,
+we can turn off automatic updates44 and refresh the system snaps when it’s convenient (for
+example, during a maintenance window).
+If you would like to try out snaps, we recommend the excellent quickstart tour45 tutorial in
+the snap documentation. Feel free to continue using the VM we’ve been using in this tutorial
+while exploring!
+Completion!
+Once you are finished and want to leave the tutorial, you can run:
+$ exit
+This will take you out of the VM and back to your live machine. Then, you can run the following
+commands to delete the VM and remove it completely from your machine:
+$ multipass delete tutorial
+$ multipass purge
+43 https://snapcraft.io/docs/channels
+44 https://snapcraft.io/docs/managing-updates
+45 https://snapcraft.io/docs/get-started
+71 of 1139
+
+Summary
+Congratulations, we made it to the end! We’ve covered a lot of material in this tutorial, so
+let’s do a quick recap of what we’ve learned:
+Finding, installing and removing packages
+• How to update and upgrade all our system’s software with APT:
+– sudo apt update && sudo apt upgrade
+• How to search for software using keywords or strings:
+– apt search <keyword> or apt search "some content string"
+• How to see the description of a package, including what dependencies it has:
+– apt show <package name>
+Or how to check what package versions are available:
+– apt policy <package>
+• How to install packages…
+– sudo apt install <package1> <package2>
+• How to see all the files a package contains
+– dpkg --listfiles <package>
+• How to find out what package a file belongs to:
+– dpkg --search <path/to/file>
+• …And how to remove packages again! As well as the difference between removing and
+purging.
+– sudo apt remove <package>
+• We even learned how to downgrade to older versions of APT packages, and all about
+APT sources.
+Customizing package configuration
+• How to find the conffiles in a package:
+– dpkg-query --show -f='${Conffiles}\n' <package>
+• How to see if package files have been changed:
+– dpkg --verify <package>
+• …And if a non-conffile has been changed by accident, we can fix it with:
+– sudo apt install --reinstall <package>
+• We know that our changes to conffiles are always safely preserved, while changes to
+non-conffiles are reverted at the next upgrade or security fix.
+• Importantly, we know how to verify checksums withmd5sum or similar tools, which helps
+us to more safely build packages from source.
+• And finally, we learned about snaps!
+72 of 1139
+
+AttachyourUbuntuProsubscription
+Attaching the Ubuntu Pro46 subscription to Ubuntu brings you the enterprise lifecycle47, in-
+cluding Linux kernel livepatching48, access toFIPS-validated packages49, and compliance with
+security profiles 50 such as CIS or DISA-STIG. This is not required for Ubuntu Pro instances
+through public clouds 51 such as AWS52, Azure53 or GCP54, since these are automatically at-
+tached from launch.
+Note:
+Subscriptions are not just for enterprise customers. Anyone can get a personal subscrip-
+tion55 for free on up to 5 machines, or 50 if you are an official Ubuntu Community mem-
+ber56.
+55 https://ubuntu.com/pro
+56 https://wiki.ubuntu.com/Membership
+The following instructions explain how to attach your subscription to your Ubuntu systems.
+Step1: InstalltheUbuntuProClient
+This step is necessary for Ubuntu Pro users or holders of personal subscriptions. If you are an
+Ubuntu Pro user through a public cloud offering, your subscription is already attached and
+you can skip these instructions.
+First, make sure that you have the latest version of the Ubuntu Pro Client running. The pack-
+age used to access the Pro Client ( pro) is ubuntu-pro-client:
+$ sudo apt update && sudo apt install ubuntu-pro-client
+Most systems will have ubuntu-pro-client installed by default. If that is the case, this install
+command will upgrade the package to the latest version.
+Step2: Attachyoursubscription
+To attach your machine to a subscription, run the following command in your terminal:
+$ sudo pro attach
+46 https://ubuntu.com/pro
+47 https://ubuntu.com/about/release-cycle
+48 https://ubuntu.com/security/livepatch
+49 https://documentation.ubuntu.com/security/compliance/fips/
+50 https://ubuntu.com/security/security-standards
+51 https://ubuntu.com/cloud/public-cloud
+52 https://ubuntu.com/aws/pro
+53 https://ubuntu.com/azure/pro
+54 https://ubuntu.com/gcp/pro
+73 of 1139
+
+Note:
+For users who need to attach many systems or automate the process, as in many enterprise
+scenarios, there are parameters to the attach command to help you. Please check the
+Ubuntu Pro documentation for attaching your system with a configuration file 57
+57 https://documentation.ubuntu.com/pro-client/en/latest/howtoguides/how_to_attach_with_config_
+file/
+After running the command, you should see output like this, giving you a link and a code:
+ubuntu@test:~$ sudo pro attach
+Initiating attach operation...
+Please sign in to your Ubuntu Pro account at this link:
+https://ubuntu.com/pro/attach
+And provide the following code: H31JIV
+Open the link without closing your terminal window.
+In the field that asks you to enter your code, copy and paste the code shown in the terminal.
+Then, choose which subscription you want to attach to. By default, the Free Personal Token
+will be selected.
+If you have a paid subscription and want to attach to a different token, you may want to log
+in first so that your additional tokens will appear.
+Once you have pasted your code and chosen the subscription you want to attach your ma-
+chine to, click on the “Submit” button.
+The attach process will then continue in the terminal window, and you should eventually be
+presented with the following message:
+Attaching the machine...
+Enabling Ubuntu Pro: ESM Apps
+Ubuntu Pro: ESM Apps enabled
+Enabling Ubuntu Pro: ESM Infra
+Ubuntu Pro: ESM Infra enabled
+Enabling Livepatch
+Livepatch enabled
+This machine is now attached to 'Ubuntu Pro - free personal subscription'
+When the machine has successfully been attached, you will also see a summary of which ser-
+vices are enabled and information about your subscription.
+Available services can be enabled or disabled on the command line withpro enable <service
+name> and pro disable <service name> after you have attached.
+74 of 1139

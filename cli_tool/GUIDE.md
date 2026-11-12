@@ -19,7 +19,7 @@ Nobody starts with a package. Code **grows up** through five stages, and each st
 flowchart LR
     A["1 · Snippet<br/>a few lines"] --> B["2 · Script<br/>runs top to bottom"]
     B --> C["3 · Module<br/>importable .py file"]
-    C --> D["4 · Package<br/>folder + __init__.py"]
+    C --> D["4 · Package<br/>folder + &#95;&#95;init&#95;&#95;.py"]
     D --> E["5 · Distribution<br/>wheel + sdist"]
     E --> F[("PyPI<br/>pip install")]
 ```

@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Training Lifecycle — Notebook</title>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --ink: #1d2433;
+    --muted: #5b6478;
+    --line: #dde1ea;
+    --pre: #2563eb;
+    --pre-soft: #dbe7ff;
+    --post: #9333ea;
+    --post-soft: #efe2ff;
+    --data: #0f9d7a;
+    --data-soft: #d5f4ec;
+    --warn: #d97706;
+    --code-bg: #0f1419;
+    --code-ink: #e6edf3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1320;
+      --panel: #171d2e;
+      --ink: #e6e9f2;
+      --muted: #9aa3b8;
+      --line: #2a3350;
+      --pre: #6ea8ff;
+      --pre-soft: #1d2b4d;
+      --post: #c08bff;
+      --post-soft: #2e1f4a;
+      --data: #3ed6a9;
+      --data-soft: #15372f;
+      --warn: #fbbf24;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1320;
+    --panel: #171d2e;
+    --ink: #e6e9f2;
+    --muted: #9aa3b8;
+    --line: #2a3350;
+    --pre: #6ea8ff;
+    --pre-soft: #1d2b4d;
+    --post: #c08bff;
+    --post-soft: #2e1f4a;
+    --data: #3ed6a9;
+    --data-soft: #15372f;
+    --warn: #fbbf24;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  header {
+    padding: 28px 16px 8px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  header h1 { margin: 0 0 4px; font-size: 1.7rem; }
+  header p { margin: 0; color: var(--muted); }
+
+  nav.tabs {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    margin-top: 16px;
+  }
+  nav.tabs .inner {
+    max-width: 1000px; margin: 0 auto; display: flex; gap: 4px;
+    padding: 0 16px; overflow-x: auto;
+  }
+  nav.tabs button {
+    border: 0; background: none; color: var(--muted);
+    padding: 12px 14px; font: inherit; font-weight: 600; cursor: pointer;
+    border-bottom: 3px solid transparent; white-space: nowrap;
+  }
+  nav.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--pre); }
+  nav.tabs button:focus-visible { outline: 2px solid var(--pre); outline-offset: -2px; }
+
+  main { max-width: 1000px; margin: 0 auto; padding: 16px; }
+  section.tab { display: none; }
+  section.tab.active { display: block; }
+
+  /* Notebook cells */
+  .cell {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin: 0 0 18px;
+    overflow: hidden;
+  }
+  .cell-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px; border-bottom: 1px solid var(--line);
+    font-size: .85rem; color: var(--muted);
+  }
+  .tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .78rem; padding: 2px 8px; border-radius: 6px;
+  }
+  .tag.md { background: var(--line); color: var(--ink); }
+  .tag.pre { background: var(--pre-soft); color: var(--pre); }
+  .tag.post { background: var(--post-soft); color: var(--post); }
+  .tag.data { background: var(--data-soft); color: var(--data); }
+  .cell-body { padding: 16px 18px; }
+  .cell-body h2 { margin: 0 0 8px; font-size: 1.25rem; }
+  .cell-body h3 { margin: 16px 0 6px; font-size: 1.02rem; }
+  .cell-body p { margin: 0 0 10px; }
+  .cell-body ul { margin: 0 0 10px; padding-left: 20px; }
+  .cell-body li { margin-bottom: 4px; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; }
+  .codebox {
+    background: var(--code-bg); color: var(--code-ink);
+    border-radius: 8px; padding: 12px 14px; overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .85rem; line-height: 1.5;
+    margin: 8px 0 12px;
+  }
+  .out-label {
+    font-family: ui-monospace, monospace; font-size: .78rem; color: var(--muted); margin: 14px 0 6px;
+  }
+  .figure { width: 100%; height: auto; display: block; }
+  .figure text { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; fill: var(--ink); }
+  .figure .sub { fill: var(--muted); font-size: 12px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .callout {
+    border-left: 4px solid var(--pre); background: var(--pre-soft);
+    padding: 10px 14px; border-radius: 8px; margin: 10px 0;
+  }
+  .callout.post { border-left-color: var(--post); background: var(--post-soft); }
+  .callout.data { border-left-color: var(--data); background: var(--data-soft); }
+  .callout.warn { border-left-color: var(--warn); }
+
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; margin: 6px 0 10px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: .85rem; }
+  @media (max-width: 600px) {
+    table, thead, tbody, tr, th, td { display: block; }
+    thead { display: none; }
+    tr { border-bottom: 1px solid var(--line); padding: 6px 0; }
+    td { border: 0; padding: 3px 0; }
+    td::before { content: attr(data-label) ": "; color: var(--muted); font-weight: 600; }
+  }
+
+  button.btn, select {
+    font: inherit; font-size: .9rem;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    border-radius: 8px; padding: 6px 12px; cursor: pointer;
+  }
+  button.btn:hover { border-color: var(--pre); }
+  button.btn.on { background: var(--pre); color: #fff; border-color: var(--pre); }
+  button.btn.post.on { background: var(--post); border-color: var(--post); }
+  .btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
+
+  /* Lifecycle cards on tab 1 */
+  .flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 10px 0 6px; }
+  .node {
+    flex: 1 1 140px; border: 2px solid var(--line); background: var(--panel);
+    border-radius: 10px; padding: 10px 12px; cursor: pointer; text-align: left;
+    font: inherit; color: var(--ink);
+  }
+  .node b { display: block; font-size: .95rem; }
+  .node small { color: var(--muted); }
+  .node.pre-n { border-color: var(--pre); }
+  .node.post-n { border-color: var(--post); }
+  .node.data-n { border-color: var(--data); }
+  .node[aria-pressed="true"] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 15%, transparent); }
+  .arrow { align-self: center; color: var(--muted); font-size: 1.3rem; }
+  .detail {
+    min-height: 70px; background: var(--bg); border-radius: 10px; padding: 12px 14px; margin-top: 10px;
+    border: 1px dashed var(--line);
+  }
+
+  /* Next-token demo */
+  .sentence { font-size: 1.15rem; margin: 6px 0; }
+  .sentence .tok {
+    display: inline-block; background: var(--pre-soft); color: var(--pre);
+    padding: 2px 8px; border-radius: 6px; margin: 2px; font-family: ui-monospace, monospace; font-size: .95rem;
+  }
+  .sentence .next {
+    display: inline-block; border: 2px dashed var(--pre); color: var(--pre);
+    padding: 2px 10px; border-radius: 6px; margin: 2px; font-family: ui-monospace, monospace;
+  }
+  .bar-row { display: grid; grid-template-columns: 90px 1fr 56px; gap: 10px; align-items: center; margin: 6px 0; font-size: .9rem; }
+  .bar-track { background: var(--line); border-radius: 6px; height: 16px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--pre); border-radius: 6px; transition: width .4s ease; }
+  .bar-fill.post { background: var(--post); }
+  .bar-row .mono { text-align: right; }
+
+  .range-wrap { display: flex; align-items: center; gap: 12px; margin: 6px 0; flex-wrap: wrap; }
+  input[type="range"] { flex: 1 1 200px; accent-color: var(--data); }
+
+  /* Quiz */
+  .resp {
+    border: 2px solid var(--line); border-radius: 10px; padding: 12px 14px; cursor: pointer;
+    background: var(--panel); color: var(--ink); text-align: left; font: inherit; width: 100%; margin-bottom: 8px;
+  }
+  .resp:hover { border-color: var(--post); }
+  .resp.picked { border-color: var(--post); }
+  .resp.good { border-color: var(--data); background: var(--data-soft); }
+  .resp.bad { border-color: var(--warn); }
+  .verdict { margin-top: 8px; min-height: 24px; font-weight: 600; }
+
+  details { margin: 6px 0; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--muted); }
+  footer { max-width: 1000px; margin: 0 auto; padding: 8px 16px 40px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>LLM Training Lifecycle</h1>
+  <p>An interactive notebook: how a Large Language Model goes from raw text to a helpful assistant.</p>
+</header>
+
+<nav class="tabs" role="tablist">
+  <div class="inner">
+    <button role="tab" aria-selected="true" aria-controls="tab-overview" id="btn-overview" data-tab="overview">1 · Big Picture</button>
+    <button role="tab" aria-selected="false" aria-controls="tab-pre" id="btn-pre" data-tab="pre">2 · Pre-Training</button>
+    <button role="tab" aria-selected="false" aria-controls="tab-post" id="btn-post" data-tab="post">3 · Post-Training</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============================================================ -->
+<!-- TAB 1: BIG PICTURE                                            -->
+<!-- ============================================================ -->
+<section class="tab active" id="tab-overview" role="tabpanel" aria-labelledby="btn-overview">
+
+  <div class="cell">
+    <div class="cell-head"><span class="tag md">[1]</span> Markdown · Introduction</div>
+    <div class="cell-body">
+      <h2>Two buckets, one model</h2>
+      <p>Training an LLM is split into two big phases. <b>Pre-training</b> builds the model's "brain" from scratch
+      by reading huge amounts of text. <b>Post-training</b> takes that brain and teaches it to behave like a helpful,
+      safe, conversational assistant.</p>
+      <div class="callout">
+        <b>Mental model:</b> Pre-training teaches the model <i>what language is and what the world contains</i>.
+        Post-training teaches it <i>how to use that knowledge when talking to a person</i>.
+      </div>
+    </div>
+  </div>
+
+  <div class="cell">
+    <div class="cell-head"><span class="tag pre">[2]</span> Output · The full pipeline <span style="margin-left:auto">click any stage</span></div>
+    <div class="cell-body">
+      <svg class="figure" viewBox="0 0 960 300" role="img" aria-label="Pipeline: web data to pre-training to base model to post-training to assistant">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+        <!-- phase bands -->
+        <rect x="200" y="20" width="330" height="260" rx="16" fill="var(--pre-soft)" opacity=".55"/>
+        <rect x="560" y="20" width="390" height="260" rx="16" fill="var(--post-soft)" opacity=".55"/>
+        <text x="365" y="46" text-anchor="middle" style="font-weight:700;fill:var(--pre)">PHASE 1 · PRE-TRAINING</text>
+        <text x="755" y="46" text-anchor="middle" style="font-weight:700;fill:var(--post)">PHASE 2 · POST-TRAINING</text>
+
+        <!-- data -->
+        <rect x="16" y="110" width="150" height="80" rx="12" fill="var(--data-soft)" stroke="var(--data)" stroke-width="2"/>
+        <text x="91" y="140" text-anchor="middle" font-weight="700">Raw Text</text>
+        <text x="91" y="160" text-anchor="middle" class="sub">trillions of tokens</text>
+
+        <!-- stage 1 -->
+        <rect x="216" y="70" width="140" height="70" rx="12" fill="var(--panel)" stroke="var(--pre)" stroke-width="2"/>
+        <text x="286" y="100" text-anchor="middle" font-weight="700">Base Pre-Training</text>
+        <text x="286" y="120" text-anchor="middle" class="sub">next-token prediction</text>
+
+        <!-- stage 2 -->
+        <rect x="216" y="170" width="140" height="70" rx="12" fill="var(--panel)" stroke="var(--pre)" stroke-width="2"/>
+        <text x="286" y="200" text-anchor="middle" font-weight="700">Continual PT (CPT)</text>
+        <text x="286" y="158" text-anchor="middle" class="sub" style="font-size:11px">runs after base PT</text>
+        <text x="286" y="220" text-anchor="middle" class="sub">domain adaptation</text>
+
+        <!-- base model -->
+        <rect x="396" y="110" width="120" height="80" rx="12" fill="var(--panel)" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 4"/>
+        <text x="456" y="140" text-anchor="middle" font-weight="700">Base Model</text>
+        <text x="456" y="160" text-anchor="middle" class="sub">knows language</text>
+
+        <!-- stage 3 -->
+        <rect x="580" y="70" width="150" height="70" rx="12" fill="var(--panel)" stroke="var(--post)" stroke-width="2"/>
+        <text x="655" y="100" text-anchor="middle" font-weight="700">SFT</text>
+        <text x="655" y="120" text-anchor="middle" class="sub">instruction tuning</text>
+
+        <!-- stage 4 -->
+        <rect x="580" y="170" width="150" height="70" rx="12" fill="var(--panel)" stroke="var(--post)" stroke-width="2"/>
+        <text x="655" y="200" text-anchor="middle" font-weight="700">Preference Align.</text>
+        <text x="655" y="220" text-anchor="middle" class="sub">DPO / RLHF</text>
+
+        <!-- assistant -->
+        <rect x="790" y="110" width="150" height="80" rx="12" fill="var(--data-soft)" stroke="var(--data)" stroke-width="2"/>
+        <text x="865" y="140" text-anchor="middle" font-weight="700">Assistant</text>
+        <text x="865" y="160" text-anchor="middle" class="sub">helpful · safe</text>
+
+        <!-- arrows -->
+        <g stroke="currentColor" stroke-width="2" fill="none" style="color:var(--muted)" marker-end="url(#arr)">
+          <path d="M168,150 C190,150 190,105 214,105"/>
+          <path d="M286,142 L286,168"/>
+          <path d="M358,205 C380,205 380,160 394,150"/>
+          <path d="M518,150 C540,150 540,105 578,105"/>
+          <path d="M656,142 L656,168"/>
+          <path d="M732,205 C760,205 760,150 788,150"/>
+        </g>
+        <text x="365" y="292" text-anchor="middle" class="sub">Phase 1 turns text into a base model · Phase 2 turns a base model into an assistant</text>
+      </svg>
+
+      <div class="btnrow" role="group" aria-label="Pipeline stages">
+        <button class="btn on" data-stage="raw">Raw Text</button>
+        <button class="btn" data-stage="base">Base Pre-Training</button>
+        <button class="btn" data-stage="cpt">CPT</button>
+        <button class="btn post" data-stage="sft">SFT</button>
+        <button class="btn post" data-stage="align">Preference Align.</button>
+        <button class="btn" data-stage="assistant">Assistant</button>
+      </div>
+      <div class="detail" id="stage-detail" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="cell">
+    <div class="cell-head"><span class="tag md">[3]</span> Markdown · Side-by-side comparison</div>
+    <div class="cell-body">
+      <table>
+        <thead><tr><th></th><th>Pre-Training</th><th>Post-Training</th></tr></thead>
+        <tbody>
+          <tr><td data-label="Question"><b>Goal</b></td><td data-label="Pre-Training">Learn grammar, facts, reasoning patterns</td><td data-label="Post-Training">Learn to follow instructions and behave well</td></tr>
+          <tr><td data-label="Question"><b>Data</b></td><td data-label="Pre-Training">Raw web, books, code, papers (unlabeled)</td><td data-label="Post-Training">Curated prompt/response pairs and human preferences</td></tr>
+          <tr><td data-label="Question"><b>Learning signal</b></td><td data-label="Pre-Training">Predict the next token (self-supervised)</td><td data-label="Post-Training">Imitate good answers, then prefer better ones</td></tr>
+          <tr><td data-label="Question"><b>Scale</b></td><td data-label="Pre-Training">Trillions of tokens, huge GPU clusters</td><td data-label="Post-Training">Thousands to millions of examples, far cheaper</td></tr>
+          <tr><td data-label="Question"><b>Output</b></td><td data-label="Pre-Training">A base model that continues text</td><td data-label="Post-Training">An assistant that answers questions</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================ -->
+<!-- TAB 2: PRE-TRAINING                                           -->
+<!-- ============================================================ -->
+<section class="tab" id="tab-pre" role="tabpanel" aria-labelledby="btn-pre">
+
+  <div class="cell">
+    <div class="cell-head"><span class="tag md">[1]</span> Markdown · Phase 1 overview</div>
+    <div class="cell-body">
+      <h2>Pre-Training: building the foundation</h2>
+      <p>Pre-training reads massive web archives to learn grammar, facts, reasoning, and language patterns. It has two stages:
+      <b>Base Pre-Training</b> (general knowledge) and <b>Continual Pre-Training</b> (specialist knowledge).</p>
+    </div>
+  </div>
+
+  <!-- Base pre-training -->
+  <div class="cell">
+    <div class="cell-head"><span class="tag pre">[2]</span> Stage 1.1 · Base Pre-Training <span class="tag md" style="margin-left:auto">unsupervised</span></div>
+    <div class="cell-body">
+      <h2>Base Pre-Training</h2>
+      <p><b>Goal:</b> teach language structure, world knowledge, and next-token prediction.<br>
+      <b>Data:</b> trillions of tokens of raw internet text (Wikipedia, books, news, open-source code).<br>
+      <b>Mechanism:</b> feed a continuous stream of text and train the model to predict the very next token.</p>
+
+      <div class="out-label">Output · the training loop</div>
+      <svg class="figure" viewBox="0 0 960 200" role="img" aria-label="Input tokens shifted one position to produce targets">
+        <text x="20" y="32" font-weight="700">Text stream</text>
+        <g font-family="ui-monospace, monospace" font-size="15">
+          <rect x="150" y="14" width="92" height="30" rx="6" fill="var(--pre-soft)" stroke="var(--pre)"/><text x="196" y="34" text-anchor="middle">The</text>
+          <rect x="250" y="14" width="92" height="30" rx="6" fill="var(--pre-soft)" stroke="var(--pre)"/><text x="296" y="34" text-anchor="middle">cat</text>
+          <rect x="350" y="14" width="92" height="30" rx="6" fill="var(--pre-soft)" stroke="var(--pre)"/><text x="396" y="34" text-anchor="middle">sat</text>
+          <rect x="450" y="14" width="92" height="30" rx="6" fill="var(--pre-soft)" stroke="var(--pre)"/><text x="496" y="34" text-anchor="middle">on</text>
+          <rect x="550" y="14" width="92" height="30" rx="6" fill="var(--pre-soft)" stroke="var(--pre)"/><text x="596" y="34" text-anchor="middle">the</text>
+          <rect x="650" y="14" width="92" height="30" rx="6" fill="var(--pre-soft)" stroke="var(--pre)"/><text x="696" y="34" text-anchor="middle">mat</text>
+        </g>
+
+        <text x="20" y="100" font-weight="700">Input  (x)</text>
+        <text x="20" y="150" font-weight="700">Target (y)</text>
+        <g font-family="ui-monospace, monospace" font-size="15">
+          <rect x="150" y="82" width="92" height="30" rx="6" fill="var(--panel)" stroke="var(--muted)"/><text x="196" y="102" text-anchor="middle">The</text>
+          <rect x="250" y="82" width="92" height="30" rx="6" fill="var(--panel)" stroke="var(--muted)"/><text x="296" y="102" text-anchor="middle">cat</text>
+          <rect x="350" y="82" width="92" height="30" rx="6" fill="var(--panel)" stroke="var(--muted)"/><text x="396" y="102" text-anchor="middle">sat</text>
+          <rect x="450" y="82" width="92" height="30" rx="6" fill="var(--panel)" stroke="var(--muted)"/><text x="496" y="102" text-anchor="middle">on</text>
+          <rect x="550" y="82" width="92" height="30" rx="6" fill="var(--panel)" stroke="var(--muted)"/><text x="596" y="102" text-anchor="middle">the</text>
+
+          <rect x="250" y="132" width="92" height="30" rx="6" fill="var(--data-soft)" stroke="var(--data)"/><text x="296" y="152" text-anchor="middle">cat</text>
+          <rect x="350" y="132" width="92" height="30" rx="6" fill="var(--data-soft)" stroke="var(--data)"/><text x="396" y="152" text-anchor="middle">sat</text>
+          <rect x="450" y="132" width="92" height="30" rx="6" fill="var(--data-soft)" stroke="var(--data)"/><text x="496" y="152" text-anchor="middle">on</text>
+          <rect x="550" y="132" width="92" height="30" rx="6" fill="var(--data-soft)" stroke="var(--data)"/><text x="596" y="152" text-anchor="middle">the</text>
+          <rect x="650" y="132" width="92" height="30" rx="6" fill="var(--data-soft)" stroke="var(--data)"/><text x="696" y="152" text-anchor="middle">mat</text>
+        </g>
+        <text x="20" y="190" class="sub">Each position: read everything so far, guess the next token, compare with the target, adjust weights.</text>
+        <g stroke="var(--muted)" stroke-dasharray="3 3" fill="none"><path d="M250,46 L250,80"/><path d="M350,46 L350,80"/></g>
+      </svg>
+
+      <div class="codebox"><span style="color:#8b98a9"># the whole idea in one line</span>
+loss = -log P(next_token | all previous tokens)   <span style="color:#8b98a9"># cross-entropy, averaged over the corpus</span></div>
+
+      <h3>Try it: what comes next?</h3>
+      <p>Pick a prefix. The bars show how a model might score possible next tokens (illustrative numbers).</p>
+      <div class="btnrow" id="prefix-buttons"></div>
+      <div class="sentence" id="prefix-sentence"></div>
+      <div id="prefix-bars"></div>
+      <p class="sub" id="prefix-loss" style="color:var(--muted);font-size:.9rem"></p>
+    </div>
+  </div>
+
+  <!-- CPT -->
+  <div class="cell">
+    <div class="cell-head"><span class="tag pre">[3]</span> Stage 1.2 · Continual Pre-Training (CPT) <span class="tag data" style="margin-left:auto">domain adaptation</span></div>
+    <div class="cell-body">
+      <h2>Continual Pre-Training / Domain Adaptation</h2>
+      <p><b>When:</b> right after base pre-training. It takes the base model as its starting point.<br>
+      <b>Goal:</b> expand the base model's knowledge into a niche it has not seen enough of (legal, medical journals, Linux manuals, a codebase).<br>
+      <b>Data:</b> unstructured, raw domain documents.<br>
+      <b>Mechanism:</b> keep training with the same next-token objective, so the weights absorb specialist vocabulary and syntax.</p>
+
+      <div class="out-label">Output · what changes inside the model</div>
+      <svg class="figure" viewBox="0 0 960 220" role="img" aria-label="Base model weights plus domain documents produce updated weights">
+        <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+        <rect x="20" y="60" width="180" height="100" rx="12" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+        <text x="110" y="100" text-anchor="middle" font-weight="700">Base model</text>
+        <text x="110" y="122" text-anchor="middle" class="sub">general web knowledge</text>
+
+        <rect x="260" y="20" width="200" height="60" rx="12" fill="var(--data-soft)" stroke="var(--data)" stroke-width="2"/>
+        <text x="360" y="46" text-anchor="middle" font-weight="700">General web mix</text>
+        <text x="360" y="64" text-anchor="middle" class="sub" id="cpt-general-label">replay (anti-forgetting)</text>
+        <rect x="260" y="140" width="200" height="60" rx="12" fill="var(--pre-soft)" stroke="var(--pre)" stroke-width="2"/>
+        <text x="360" y="166" text-anchor="middle" font-weight="700">Domain documents</text>
+        <text x="360" y="184" text-anchor="middle" class="sub" id="cpt-domain-label">legal · medical · code</text>
+
+        <g stroke="var(--muted)" stroke-width="2" fill="none" marker-end="url(#arr2)">
+          <path d="M200,80 C230,80 230,50 258,50"/>
+          <path d="M200,120 C230,120 230,170 258,170"/>
+        </g>
+
+        <rect x="520" y="60" width="180" height="100" rx="12" fill="var(--panel)" stroke="var(--pre)" stroke-width="3"/>
+        <text x="610" y="100" text-anchor="middle" font-weight="700">Domain-adapted</text>
+        <text x="610" y="122" text-anchor="middle" class="sub">model weights updated</text>
+        <path d="M472,50 C500,50 500,90 518,100 M472,170 C500,170 500,130 518,120" stroke="var(--muted)" stroke-width="2" fill="none"/>
+
+        <text x="760" y="70" font-weight="700">Mix ratio</text>
+        <text x="760" y="92" class="sub">Domain share: <tspan id="cpt-pct" font-weight="700">70%</tspan></text>
+      </svg>
+
+      <div class="range-wrap">
+        <label for="cpt-slider">Domain share of training mix</label>
+        <input type="range" id="cpt-slider" min="0" max="100" value="70">
+      </div>
+      <div class="bar-row"><span>Domain fit</span><div class="bar-track"><div class="bar-fill" id="cpt-fit" style="width:70%"></div></div><span class="mono" id="cpt-fit-v">70</span></div>
+      <div class="bar-row"><span>General skill kept</span><div class="bar-track"><div class="bar-fill post" id="cpt-keep" style="width:30%"></div></div><span class="mono" id="cpt-keep-v">30</span></div>
+      <div class="callout warn" id="cpt-note"></div>
+      <p class="sub" style="color:var(--muted);font-size:.85rem">Illustrative only: the real trade-off depends on data quality, learning rate and how much replay of general data you keep.</p>
+    </div>
+  </div>
+
+  <div class="cell">
+    <div class="cell-head"><span class="tag md">[4]</span> Markdown · Summary</div>
+    <div class="cell-body">
+      <ul>
+        <li><b>Base pre-training</b> = general knowledge, unlabeled text, next-token loss.</li>
+        <li><b>CPT</b> = step 2, run after base pre-training on a domain corpus with the same objective, usually mixed with general data to avoid forgetting.</li>
+        <li>Output is a <b>base model</b>: fluent, knowledgeable, but it only continues text. It does not yet know it should answer you.</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================ -->
+<!-- TAB 3: POST-TRAINING                                          -->
+<!-- ============================================================ -->
+<section class="tab" id="tab-post" role="tabpanel" aria-labelledby="btn-post">
+
+  <div class="cell">
+    <div class="cell-head"><span class="tag md">[1]</span> Markdown · Phase 2 overview</div>
+    <div class="cell-body">
+      <h2>Post-Training: from text continuer to assistant</h2>
+      <p>Post-training starts from a model that already knows how language works. It teaches the model to follow
+      instructions (<b>SFT</b>) and to prefer answers humans like (<b>preference alignment</b>).</p>
+    </div>
+  </div>
+
+  <!-- SFT -->
+  <div class="cell">
+    <div class="cell-head"><span class="tag post">[2]</span> Stage 2.1 · Supervised Fine-Tuning (SFT) <span class="tag md" style="margin-left:auto">instruction tuning</span></div>
+    <div class="cell-body">
+      <h2>Supervised Fine-Tuning / Instruction Tuning</h2>
+      <p><b>Goal:</b> follow instructions, format answers, and act like an assistant instead of continuing blocks of text.<br>
+      <b>Data:</b> curated prompt-and-response pairs.<br>
+      <b>Mechanism:</b> fine-tune (often with LoRA or QLoRA, which update a small set of extra weights) to map user intents to accurate, structured answers.</p>
+
+      <h3>Try it: same prompt, two models</h3>
+      <div class="btnrow">
+        <button class="btn post on" id="sft-raw" aria-pressed="true">Base model (before SFT)</button>
+        <button class="btn post" id="sft-tuned" aria-pressed="false">After SFT</button>
+      </div>
+      <div class="codebox" id="sft-view"></div>
+
+      <div class="out-label">Output · the chat template SFT trains on</div>
+      <svg class="figure" viewBox="0 0 960 170" role="img" aria-label="Chat template with user and assistant turns">
+        <rect x="20" y="20" width="420" height="60" rx="10" fill="var(--panel)" stroke="var(--ink)"/>
+        <text x="36" y="44" font-family="ui-monospace, monospace" font-size="14" font-weight="700">&lt;User&gt;</text>
+        <text x="36" y="66" font-family="ui-monospace, monospace" font-size="14">Summarize this paragraph in 2 lines.</text>
+        <rect x="20" y="92" width="420" height="60" rx="10" fill="var(--post-soft)" stroke="var(--post)" stroke-width="2"/>
+        <text x="36" y="116" font-family="ui-monospace, monospace" font-size="14" font-weight="700">&lt;Assistant&gt;</text>
+        <text x="36" y="138" font-family="ui-monospace, monospace" font-size="14">Loss is computed on these tokens only.</text>
+        <rect x="480" y="20" width="460" height="132" rx="12" fill="var(--panel)" stroke="var(--line)"/>
+        <text x="496" y="50" font-weight="700">Training signal</text>
+        <text x="496" y="76" class="sub">Pairs teach the mapping:</text>
+        <text x="496" y="98" class="sub">intent  →  structured, correct answer</text>
+        <text x="496" y="128" class="sub">Same next-token loss as pre-training,</text>
+        <text x="496" y="146" class="sub">but only on the assistant's reply.</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Preference alignment -->
+  <div class="cell">
+    <div class="cell-head"><span class="tag post">[3]</span> Stage 2.2 · Preference Alignment (DPO / RLHF) <span class="tag md" style="margin-left:auto">human preferences</span></div>
+    <div class="cell-body">
+      <h2>Preference Alignment</h2>
+      <p><b>Goal:</b> align behavior with human values: helpful, safe, honest, polite, and free of toxic or hallucinated output.<br>
+      <b>Data:</b> human rankings of two answers to the same prompt, or scores from an automated reward model.<br>
+      <b>Mechanism:</b> reinforce what people prefer and penalize harmful, biased, or unhelpful responses.</p>
+
+      <h3>Quiz: which answer would you reward?</h3>
+      <p>Prompt: <i>"How do I get rid of a cough?"</i></p>
+      <button class="resp" data-ans="a">
+        <b>A.</b> "Drink warm fluids, rest, and try honey. If it lasts more than 2 weeks or you have a fever, see a doctor."
+      </button>
+      <button class="resp" data-ans="b">
+        <b>B.</b> "Just take 10 times the recommended dose of cough medicine. It works fast."
+      </button>
+      <div class="verdict" id="quiz-verdict"></div>
+
+      <div class="out-label">Output · how the preference loop works</div>
+      <svg class="figure" viewBox="0 0 960 240" role="img" aria-label="Prompt to two responses, human ranks, reward model or DPO, policy update">
+        <defs><marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>
+        <rect x="10" y="90" width="130" height="60" rx="10" fill="var(--panel)" stroke="var(--ink)"/>
+        <text x="75" y="116" text-anchor="middle" font-weight="700">Prompt</text>
+        <text x="75" y="134" text-anchor="middle" class="sub">from a dataset</text>
+
+        <rect x="180" y="30" width="170" height="60" rx="10" fill="var(--panel)" stroke="var(--post)" stroke-width="2"/>
+        <text x="265" y="56" text-anchor="middle" font-weight="700">Answer A (chosen)</text>
+        <text x="265" y="74" text-anchor="middle" class="sub">helpful, safe</text>
+        <rect x="180" y="150" width="170" height="60" rx="10" fill="var(--panel)" stroke="var(--warn)" stroke-width="2"/>
+        <text x="265" y="176" text-anchor="middle" font-weight="700">Answer B (rejected)</text>
+        <text x="265" y="194" text-anchor="middle" class="sub">harmful or unhelpful</text>
+
+        <rect x="400" y="80" width="170" height="80" rx="10" fill="var(--panel)" stroke="var(--data)" stroke-width="2"/>
+        <text x="485" y="110" text-anchor="middle" font-weight="700">Human ranking</text>
+        <text x="485" y="130" text-anchor="middle" class="sub">or reward model score</text>
+
+        <rect x="620" y="80" width="150" height="80" rx="10" fill="var(--panel)" stroke="var(--post)" stroke-width="2"/>
+        <text x="695" y="110" text-anchor="middle" font-weight="700">Update policy</text>
+        <text x="695" y="130" text-anchor="middle" class="sub">RLHF (PPO) or DPO</text>
+
+        <rect x="800" y="80" width="150" height="80" rx="10" fill="var(--data-soft)" stroke="var(--data)" stroke-width="2"/>
+        <text x="875" y="110" text-anchor="middle" font-weight="700">Aligned model</text>
+        <text x="875" y="130" text-anchor="middle" class="sub">prefers good answers</text>
+
+        <g stroke="var(--muted)" stroke-width="2" fill="none" marker-end="url(#arr3)">
+          <path d="M140,120 C160,120 160,60 178,60"/>
+          <path d="M140,120 C160,120 160,180 178,180"/>
+          <path d="M350,60 C380,60 380,100 398,110"/>
+          <path d="M350,180 C380,180 380,130 398,120"/>
+          <path d="M570,120 L618,120"/>
+          <path d="M770,120 L798,120"/>
+        </g>
+      </svg>
+
+      <details>
+        <summary>RLHF vs DPO, in one table</summary>
+        <table>
+          <thead><tr><th>Method</th><th>What it does</th><th>Trade-off</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Method"><b>RLHF</b></td><td data-label="What">Trains a reward model from rankings, then optimizes the policy with reinforcement learning (e.g. PPO)</td><td data-label="Trade-off">Powerful, but more moving parts and more compute</td></tr>
+            <tr><td data-label="Method"><b>DPO</b></td><td data-label="What">Skips the separate reward model and trains directly on (chosen, rejected) pairs with a classification-style loss</td><td data-label="Trade-off">Simpler and cheaper, sensitive to data quality</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </div>
+  </div>
+
+  <div class="cell">
+    <div class="cell-head"><span class="tag md">[4]</span> Markdown · Summary</div>
+    <div class="cell-body">
+      <ul>
+        <li><b>SFT</b> teaches the <i>format and intent</i> of being an assistant, using example pairs.</li>
+        <li><b>Preference alignment</b> teaches <i>which</i> good answers humans prefer, using comparisons.</li>
+        <li>Together they turn the base model into the assistant you chat with.</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+</main>
+
+<footer>Illustrative numbers and simplified diagrams. Stage names follow common industry usage.</footer>
+
+<script>
+(function () {
+  // ---------- Tabs ----------
+  const tabs = document.querySelectorAll('nav.tabs button[data-tab]');
+  function showTab(name) {
+    tabs.forEach(b => {
+      const on = b.dataset.tab === name;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('section.tab').forEach(s => {
+      s.classList.toggle('active', s.id === 'tab-' + name);
+    });
+    try { history.replaceState(null, '', '#' + name); } catch (e) {}
+  }
+  tabs.forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+  const initial = (location.hash || '').replace('#', '');
+  if (['overview', 'pre', 'post'].includes(initial)) showTab(initial);
+
+  // ---------- Tab 1: stage explainer ----------
+  const stages = {
+    raw: { title: 'Raw Text', text: 'Trillions of tokens from the web, books, news and open-source code. Nobody labels it. This is the fuel for Phase 1.' },
+    base: { title: 'Base Pre-Training (Phase 1, step 1)', text: 'The model reads a stream of text and learns to predict the next token. This one simple task forces it to absorb grammar, facts and reasoning. Output: a base model.' },
+    cpt: { title: 'Continual Pre-Training (Phase 1, step 2)', text: 'Runs after base pre-training and starts from the base model. Optional: keep training on raw domain documents (legal, medical, codebases) so specialist vocabulary and patterns sink in.' },
+    sft: { title: 'SFT / Instruction Tuning (Phase 2)', text: 'Train on curated prompt and response pairs so the model learns to answer questions, follow instructions and format output.' },
+    align: { title: 'Preference Alignment (Phase 2)', text: 'Humans (or a reward model) compare two answers and pick the better one. Training then favors helpful, honest, safe behavior and penalizes the rest. Methods: RLHF, DPO.' },
+    assistant: { title: 'Assistant', text: 'The finished model: knowledgeable from Phase 1, shaped into a helpful, safe conversational partner by Phase 2.' }
+  };
+  const detail = document.getElementById('stage-detail');
+  const stageBtns = document.querySelectorAll('[data-stage]');
+  function setStage(key) {
+    const s = stages[key];
+    detail.innerHTML = '<b>' + s.title + '</b><br>' + s.text;
+    stageBtns.forEach(b => b.classList.toggle('on', b.dataset.stage === key));
+  }
+  stageBtns.forEach(b => b.addEventListener('click', () => setStage(b.dataset.stage)));
+  setStage('raw');
+
+  // ---------- Tab 2: next-token demo ----------
+  const prefixes = [
+    { words: ['The', 'cat', 'sat', 'on', 'the'], dist: [['mat', 0.48], ['sofa', 0.22], ['floor', 0.14], ['roof', 0.08], ['moon', 0.08]] },
+    { words: ['The', 'capital', 'of', 'France', 'is'], dist: [['Paris', 0.93], ['located', 0.03], ['known', 0.02], ['Lyon', 0.01], ['a', 0.01]] },
+    { words: ['def', 'add(a,', 'b):', 'return'], dist: [['a + b', 0.31], ['a', 0.38], ['sum(', 0.12], ['None', 0.09], ['b', 0.10]] }
+  ];
+  const btnWrap = document.getElementById('prefix-buttons');
+  const sentEl = document.getElementById('prefix-sentence');
+  const barsEl = document.getElementById('prefix-bars');
+  const lossEl = document.getElementById('prefix-loss');
+  function renderPrefix(idx) {
+    const p = prefixes[idx];
+    const label = p.words.map(w => '<span class="tok">' + w + '</span>').join(' ');
+    sentEl.innerHTML = label + ' <span class="next">?</span>';
+    const top = p.dist[0][1];
+    barsEl.innerHTML = p.dist.map(([tok, pr]) => {
+      const pct = Math.round(pr * 100);
+      return '<div class="bar-row"><span class="mono">' + tok + '</span><div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div><span class="mono">' + pct + '%</span></div>';
+    }).join('');
+    const correct = p.dist[0][1];
+    const loss = -Math.log(correct);
+    lossEl.textContent = 'If the true next token were "' + p.dist[0][0] + '", loss = -log(' + correct.toFixed(2) + ') = ' + loss.toFixed(3) + '. The model is pushed to raise that probability.';
+    document.querySelectorAll('#prefix-buttons .btn').forEach((b, i) => b.classList.toggle('on', i === idx));
+  }
+  prefixes.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.className = 'btn';
+    b.textContent = p.words.join(' ') + ' …';
+    b.addEventListener('click', () => renderPrefix(i));
+    btnWrap.appendChild(b);
+  });
+  renderPrefix(0);
+
+  // ---------- Tab 2: CPT mix slider ----------
+  const slider = document.getElementById('cpt-slider');
+  const pctEl = document.getElementById('cpt-pct');
+  const fitBar = document.getElementById('cpt-fit');
+  const fitV = document.getElementById('cpt-fit-v');
+  const keepBar = document.getElementById('cpt-keep');
+  const keepV = document.getElementById('cpt-keep-v');
+  const note = document.getElementById('cpt-note');
+  function updateCPT() {
+    const d = +slider.value;
+    // Domain fit rises with domain share (saturating); general skill falls as domain share rises.
+    const fit = Math.round(100 * (1 - Math.exp(-d / 35)));
+    const keep = Math.round(100 - Math.pow(d / 100, 1.4) * 80);
+    pctEl.textContent = d + '%';
+    fitBar.style.width = fit + '%'; fitV.textContent = fit;
+    keepBar.style.width = keep + '%'; keepV.textContent = keep;
+    document.getElementById('cpt-general-label').textContent = 'replay ' + (100 - d) + '% (anti-forgetting)';
+    document.getElementById('cpt-domain-label').textContent = 'domain ' + d + '%';
+    if (d >= 85) note.textContent = 'Too domain-heavy: the model may forget general knowledge (catastrophic forgetting). Mix some general data back in.';
+    else if (d <= 15) note.textContent = 'Too little domain data: the model barely specializes. Adaptation needs enough domain tokens.';
+    else note.textContent = 'Balanced mix: specialist vocabulary is learned while general skills are mostly preserved.';
+  }
+  slider.addEventListener('input', updateCPT);
+  updateCPT();
+
+  // ---------- Tab 3: SFT before/after ----------
+  const rawBtn = document.getElementById('sft-raw');
+  const tunedBtn = document.getElementById('sft-tuned');
+  const sftView = document.getElementById('sft-view');
+  const sftPrompt = 'How do I reverse a list in Python?';
+  function renderSFT(mode) {
+    const isTuned = mode === 'tuned';
+    rawBtn.classList.toggle('on', !isTuned);
+    tunedBtn.classList.toggle('on', isTuned);
+    rawBtn.setAttribute('aria-pressed', String(!isTuned));
+    tunedBtn.setAttribute('aria-pressed', String(isTuned));
+    if (isTuned) {
+      sftView.innerHTML =
+        '<span style="color:#7dd3fc">&lt;User&gt;</span> ' + sftPrompt + '\n' +
+        '<span style="color:#c4b5fd">&lt;Assistant&gt;</span> Use slicing:\n\n' +
+        '    my_list[::-1]       <span style="color:#8b98a9"># returns a new reversed list</span>\n\n' +
+        'Or call <code style="color:#e6edf3">my_list.reverse()</code> to reverse in place.';
+    } else {
+      sftView.innerHTML =
+        '<span style="color:#8b98a9">[continuation, no notion of a question]</span>\n' +
+        'How do I reverse a list in Python?\n' +
+        'How do I reverse a string in Python?\n' +
+        'How do I reverse a list in JavaScript? Stack Overflow users asked this in 2014...';
+    }
+  }
+  rawBtn.addEventListener('click', () => renderSFT('raw'));
+  tunedBtn.addEventListener('click', () => renderSFT('tuned'));
+  renderSFT('raw');
+
+  // ---------- Tab 3: preference quiz ----------
+  const respBtns = document.querySelectorAll('.resp');
+  const verdict = document.getElementById('quiz-verdict');
+  respBtns.forEach(b => b.addEventListener('click', () => {
+    const picked = b.dataset.ans;
+    respBtns.forEach(x => { x.classList.remove('picked', 'good', 'bad'); });
+    const good = 'a';
+    b.classList.add('picked');
+    if (picked === good) {
+      b.classList.add('good');
+      verdict.style.color = 'var(--data)';
+      verdict.textContent = 'Correct. A is helpful, honest and safe, so the preference signal rewards it. The loss pushes the model toward answers like A.';
+    } else {
+      b.classList.add('bad');
+      document.querySelector('.resp[data-ans="a"]').classList.add('good');
+      verdict.style.color = 'var(--warn)';
+      verdict.textContent = 'Not this one. B is harmful (overdosing). Preference training penalizes it, so the model learns to avoid answers like B.';
+    }
+  }));
+})();
+</script>
+</body>
+</html>
